@@ -11,7 +11,7 @@
 
 }
 
-.bc-icon-refresh {
+.bc-icon-refresh { /* This is getting weird */
 	background-image: url("icons/arrow-clockwise.svg");
 }
 

@@ -1,5 +1,4 @@
-var webpack = require('webpack');
-const WebExtPlugin = require('web-ext-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
 
 module.exports = {
@@ -8,7 +7,7 @@ module.exports = {
         global: false,
     },
     devtool: false,
-    watch: true,
+    // watch: true,
     watchOptions: {
         aggregateTimeout: 200,
         poll: 1000,
@@ -30,25 +29,13 @@ module.exports = {
         path: path.resolve(__dirname, "addon"),
         filename: "[name].js"
     },
-    plugins: [new WebExtPlugin({
-        sourceDir: path.resolve(__dirname, "addon"),
-        artifactsDir: __dirname,
-        buildPackage: true,
-        overwriteDest: true,
-        // target: "fake"
-        firefox: false
-    }),
-        // new LodashModuleReplacementPlugin,
-        // new webpack.optimize.UglifyJsPlugin,
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: "*.css", context: "src" },
+                { from: "icons/*", context: "src" },
+                { from: "lib/*", context: "src" },
+            ],
+        }),
     ],
 };
-
-module.loaders = [{
-    'loader': 'babel-loader',
-    'test': /\.js$/,
-    'exclude': /node_modules/,
-    'query': {
-        'plugins': ['lodash'],
-        'presets': [['@babel/env', { 'targets': { 'node': 6 } }]]
-    }
-}];

@@ -586,6 +586,35 @@ var clean_combat_tracker = function(){
     });
 }
 
+
+var combat_wrapper = `
+<div id="bc-wrapper">
+    <div id="bc-main">
+        <div id="bc-header">
+            <section class="">
+                <nav class="b-breadcrumb-a b-breadcrumb-b bc-breadcrumb">
+                    <ul class="bc-breadcrumb-wrapper bc-breadcrumb-wrapper">
+                        <li class="b-breadcrumb-item bc-breadcrumb-item">
+                            <a href="/" rel="up"><span>Home</span></a>
+                        </li>
+                        <li class="b-breadcrumb-item bc-breadcrumb-item">
+                            <a href="/my-campaigns" rel="up"><span>Campaigns</span></a>
+                        </li>
+                        <li class="b-breadcrumb-item bc-breadcrumb-item">
+                            <a href="" rel="up"><span id="bc-breadcrumb-campaign"></span></a>
+                        </li>
+                        <li class="b-breadcrumb-item bc-breadcrumb-item">
+                            <span>Beyond Campaign</span>
+                        </li>
+                    </ul>
+                </nav>
+            </section>
+        </div>
+        <div class="grid-stack">
+        </div>
+    </div>
+</div>
+`
 })();
 
 /******/ })()

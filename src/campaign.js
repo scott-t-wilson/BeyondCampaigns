@@ -17,6 +17,9 @@ var game_id = null;
 var campaign_info = {}
 var grid = null;
 var campaign_wrapper = null;
+var gEncounters = [];
+var gMonsters = [];
+var gCharacters = [];
 
 /******************************************************************************
  * 
@@ -89,7 +92,6 @@ var db = {
     })
 })();
 
-var encounters = {};
 class Encounter {
     constructor(api) {
         this.id = api.id;
@@ -136,8 +138,6 @@ class Encounter {
     }
 }
 
-monsters = {};
-need_fetch = [];
 class Monster {
     constructor(monster_id) {
         this.id = monster_id;
@@ -154,17 +154,17 @@ class Monster {
     }
 
     static need(monster_id) {
-        let monster = monsters[monster_id];
+        let monster = gMonsters[monster_id];
         if (monster == undefined) {
             monster = new Monster(monster_id);
         }
-        monsters[monster_id] = monster;
+        gMonsters[monster_id] = monster;
         return monster;
     };
 
     static isReady() {
         let ready = true;
-        Object.values(monsters).forEach(monster => {
+        Object.values(gMonsters).forEach(monster => {
             if (monster.state != "complete") {
                 ready = false;
             }
@@ -194,20 +194,8 @@ class Monster {
     }
 }
 
-var gCharacters = [];
 class Character {
     constructor(character) {
-        // waitForKeyElements(
-        //     () => {
-        //         // wait for the new iframe to disappear, that signals we're ready
-        //         return $(iframe_sel).length == 0;
-        //     },
-        //     () => {
-        //         // load from db
-        //         console.log(`iframe ${this.id} sel`, $(iframe_sel));
-        //         console.log("ready for db read")
-        //     }, {
-
         console.log("character.constructor pre-merge()", character);
         merge(this, character);
         console.log("character.constructor()", this);
@@ -379,12 +367,6 @@ class Character {
 
             Object.values(this.db_character.skills).forEach(skill => {
                 if (skill.stat == stat) {
-                    let adjustment_html = ""; // bc-icon-advantage  bc-icon-disadvantage
-                    if (skill.adjustment == "Disadvantage") {
-                        adjustment_html = '<div class="bc-icon-inline"></div>';
-                    } else if (skill.adjustment == "Advantage") {
-                        adjustment_html = '<div class="bc-icon-inline"></div>';
-                    }
                     let skill_item = $(`
                     <li class="bc-roll-popup" bc-roll-type="check" bc-roll-action="${skill.name}">
                         <div class="bc-roll-popup-mod">${skill.modifier}</div>
@@ -482,7 +464,7 @@ var timestamp_to_date = function (unixTimestamp) {
  * 
 ******************************************************************************/
 function encounter_selected(event, encounter_id) {
-    let encounter = Encounter.encounters[encounter_id];
+    let encounter = gEncounters[encounter_id];
     if (encounter == undefined) {
         $(".bc-icon-edit,.bc-icon-play-circle").hide();
         $("..bc-icon-edit,.bc-icon-play-circle").removeData("uuid");
@@ -504,7 +486,7 @@ function encounter_selected(event, encounter_id) {
         });
         Object.entries(monster_count).forEach((monster_qty) => {
             let qty = monster_qty[1]
-            let monster = monsters[monster_qty[0]];
+            let monster = gMonsters[monster_qty[0]];
             $(` <div class="bc_monster">
                     <div class="bc_monster_name"><a class="" href="${monster.url}" target="_blank">${monster.name}</a> x ${qty}</div>
                     <div class="bc_monster_cr" >CR${monster.challengeRatingId}</div>
@@ -546,7 +528,7 @@ function get_encounters() {
             });
             json.data.forEach(api_encounter => {
                 let encounter = new Encounter(api_encounter);
-                Encounter.encounters[encounter.id] = encounter;
+                gEncounters[encounter.id] = encounter;
                 $(`<li class="bc-encounter-list" tabindex="-1">${encounter.name}</li>`)
                     .data("encounter_id", encounter.id)
                     .on("click", event => {
@@ -667,7 +649,7 @@ function load_markdown() {
             `).appendTo(campaign_wrapper);
         let section = $(event.currentTarget).parent().text();
         let encounter_id = $(event.currentTarget).data("uuid")
-        let encounter = Encounter.encounters[encounter_id];
+        let encounter = gEncounters[encounter_id];
         let targetSelector = $(event.currentTarget).data("mdtarget");
         let mdProperty = $(targetSelector).data("mdproperty");
         editor_options.initialValue = encounter[mdProperty];
@@ -1026,7 +1008,6 @@ var campaign_wrapper = `
         </div>
     </div>
 </div>
-
 `
 
 var encounter_list_html = `
@@ -1085,7 +1066,7 @@ var roll_template_html = `
 var gamelog_template_html = `
 <div class="bc-gamelog-entry">
     <div class="bc-gamelog-name">Zach McShort</div>
-        <div class="bc-icon-inline" adjustment="Disadvantage"></div>
+        <div class="bc-icon-inline" adjustment=""></div>
         <div class="bc-gamelog-roll-action">Insight</div>:
         <div class="bc-gamelog-roll-type">check</div>
         <div class="bc-gamelog-result-total">7</div>
