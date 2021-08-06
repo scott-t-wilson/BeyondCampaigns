@@ -1,0 +1,47 @@
+{
+  "manifest_version": 2,
+  "name": "BeyondCampaigns",
+  "version": "1.0",
+  "description": "Extra functionality for DnDBeyond",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{1aaceb45-b1f8-40a4-8001-4264120e9885}",
+      "strict_min_version": "48.0"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.dndbeyond.com/campaigns/*"
+      ],
+      "run_at": "document_start",
+      "js": [
+        "lib/jquery.min.js",
+        "campaign.js"
+      ],
+      "css": [
+        "main.css",
+        "icons.css",
+        "lib/easymde.min.css",
+        "lib/gridstack.min.css"
+      ]
+    },
+    {
+      "all_frames": true,
+      "matches": [
+        "https://www.dndbeyond.com/profile/*/characters/*"
+      ],
+      "run_at": "document_start",
+      "js": [
+        "lib/jquery.min.js",
+        "character.js"
+      ],
+      "css": [
+      ]
+    }
+  ],
+  "permissions": [
+    "*://*.dndbeyond.com/*",
+    "webRequest"
+  ]
+}
