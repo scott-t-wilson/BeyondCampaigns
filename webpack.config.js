@@ -26,13 +26,15 @@ module.exports = {
         // content_scripts: "./src/init.js",
     },
     output: {
-        path: path.resolve(__dirname, "addon"),
+        path: path.resolve(__dirname, "dist"),
         filename: "[name].js"
     },
     plugins: [
         new CopyPlugin({
             patterns: [
                 { from: "*.css", context: "src" },
+                { from: "*.json", context: "src" },
+                { from: "*.map", context: "src" },
                 { from: "icons/*", context: "src" },
                 { from: "lib/*", context: "src" },
             ],

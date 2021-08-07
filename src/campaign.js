@@ -228,9 +228,9 @@ class Character {
         this.state = "fetching";
         console.log(`Character.fetch(${this.id}):`);
         var iframe = $(`<iframe class='bc-character-iframe-wrapper' src='${this.url}'></iframe>`);
-        waitForKeyElements("#bc-campaign-wrapper", (wrapper) => {
+        waitForKeyElements("#bc-wrapper", (wrapper) => {
             console.log(`Character.fetch(${this.id}): wrapper`, wrapper);
-            $("#bc-campaign-wrapper").prepend(iframe);
+            $("#bc-wrapper").prepend(iframe);
             iframe.data("bc-character-id", this.id);
             console.log(`Character.fetch(${this.id}): iframe:`, iframe);
             waitForKeyElements(
@@ -315,8 +315,8 @@ class Character {
         console.log('button.attr("skill")', button.attr("skill"));
         let roll_wrapper = $(roll_template_html);
         let roll_menu = $(roll_wrapper).first();
-        $("#bc-campaign-wrapper").append(roll_menu);
-        $("#bc-campaign-main").css("pointer-events", "none");
+        $("#bc-wrapper").append(roll_menu);
+        $("#bc-main").css("pointer-events", "none");
         // console.log(roll_wrapper);
         // console.log(roll_menu);
         $(document.body).on("click keydown", event => {
@@ -324,7 +324,7 @@ class Character {
             // console.log("(event.target == document.body):", (event.target == document.body));
             if ((event.target == document.body) || (event.originalEvent.key == "Escape")) {
                 roll_wrapper.remove();
-                $("#bc-campaign-main").css("pointer-events", "auto");
+                $("#bc-main").css("pointer-events", "auto");
             }
         })
         $(roll_menu).find("li[bc-roll-kind=advantage] > .bc-icon-check").hide();
@@ -428,7 +428,7 @@ class Character {
         console.log("rollKind:", rollKind);
         console.log("rollModifer:", rollModifer);
         $(".bc-roll-popup-wrapper").remove();
-        $("#bc-campaign-main").css("pointer-events", "auto");
+        $("#bc-main").css("pointer-events", "auto");
         this.roll_logger.d20({
             action: rollAction,  // Mace | con | Stealth
             rollType: rollType,  // damage | to hit | save | check
@@ -701,53 +701,12 @@ function start_beyond_campaign() {
     $("body > div")
         .filter(":not(.bc-default-divs)")
         .filter(":not([style$='display: none;'])")
-        .filter(":not(#bc-campaign-main)")
+        .filter(":not(#bc-main)")
         .addClass("bc-default-divs");
     $(".bc-default-divs").hide();
     $(document.body).css("overflow", "hidden");
-    if ($("#bc-campaign-main").show().length == 0) {
+    if ($("#bc-main").show().length == 0) {
         campaign_wrapper = $(campaign_wrapper).appendTo(document.body);
-
-        let starting_grid = [];
-        let layout_json = localStorage.getItem(`bc_layout_${game_id}`);
-        if (layout_json) {
-            starting_grid = JSON.parse(layout_json);
-            console.log(starting_grid);
-        } else {
-            starting_grid = [
-                { "x": 7, "y": 0, "w": 6, "h": 10, "id": "encounter_list" },
-                { "x": 7, "y": 10, "w": 6, "h": 5, "id": "encounter-details" },
-                { "x": 7, "y": 15, "w": 6, "h": 5, "id": "gamelog" },
-                { "x": 13, "y": 0, "w": 22, "h": 4, "id": "encounter-summary" },
-                { "x": 13, "y": 4, "w": 22, "h": 8, "id": "encounter-description" },
-                { "x": 13, "y": 12, "w": 22, "h": 4, "id": "encounter-rewards" },
-                { "x": 13, "y": 16, "w": 22, "h": 4, "id": "encounter-map" },
-            ];
-        }
-        load_grid_contents(starting_grid);
-
-        console.log("gCharacters:", gCharacters);
-        for (let i = 0; i < gCharacters.length; i++) {
-            console.log("gCharacters entries:", gCharacters[i]);
-        }
-        gCharacters.forEach(character => {
-            console.log("gCharacters entries:", character);
-            let grid_id = "character_" + character.id;
-            let missing = true;
-            starting_grid.forEach(item => {
-                if (item.id == grid_id) {
-                    missing = false;
-                }
-            })
-            if (missing) {
-                starting_grid.push({
-                    "x": 0, "y": 0, "w": 7, "h": 5,
-                    "id": grid_id,
-                    "content": `<div class="bc-character" character-id="${character.id}">${pc_template}</div>`,
-                })
-            }
-            character.fetch_iframe(); // this should be safe to call twice, wfke will mark the elements and only run once
-        })
         grid = GridStack.init({
             alwaysShowResizeHandle: true,
             margin: "5px",
@@ -758,9 +717,68 @@ function start_beyond_campaign() {
             // staticGrid: true,
             // float: true,
         });
-
+        let starting_grid = [];
+        let layout_json = localStorage.getItem(`bc_layout_${game_id}`);
+        if (layout_json) {
+            starting_grid = JSON.parse(layout_json);
+            console.log(starting_grid);
+        } else {
+            starting_grid = [
+                { "x": 8, "y": 0, "w": 7, "h": 10, "id": "encounter_list" },
+                { "x": 8, "y": 10, "w": 7, "h": 5, "id": "encounter-details" },
+                { "x": 8, "y": 15, "w": 7, "h": 5, "id": "gamelog" },
+                { "x": 15, "y": 0, "w": 20, "h": 4, "id": "encounter-summary" },
+                { "x": 15, "y": 4, "w": 20, "h": 8, "id": "encounter-description" },
+                { "x": 15, "y": 12, "w": 20, "h": 4, "id": "encounter-rewards" },
+                { "x": 15, "y": 16, "w": 20, "h": 4, "id": "encounter-map" },
+            ];
+        }
+        load_grid_contents(starting_grid);
         console.log("starting_grid:", starting_grid);
         grid.load(starting_grid);
+
+        // console.log("gCharacters 1:", gCharacters);
+        // console.log("gCharacters.length:", gCharacters.length);
+        // for (let i = 0; i < gCharacters.length; i++) {
+        //     console.log("gCharacters entries:", gCharacters[i]);
+        // }
+        // console.log("gCharacters 2:", gCharacters);
+        waitForKeyElements(() => {
+            return gCharacters.length > 0;
+        }, () => {
+            gCharacters.forEach(character => {
+                console.log("gCharacters entries:", character);
+                let grid_id = "character_" + character.id;
+                if ($(`.grid-stack-item[gs-id=${grid_id}]`).length == 0) {
+                    console.log("adding widget for:", grid_id);
+                    grid.addWidget({
+                        "x": 0, "y": 0, "w": 8, "h": 5,
+                        "id": grid_id,
+                        "content": `<div class="bc-character" character-id="${character.id}">${pc_template}</div>`,
+                    });
+                }
+                character.fetch_iframe(); // this should be safe to call twice, wfke will mark the elements and only run once
+                });
+        });
+        // gCharacters.forEach(character => {
+        //     console.log("gCharacters entries:", character);
+        //     let grid_id = "character_" + character.id;
+        //     let missing = true;
+        //     starting_grid.forEach(item => {
+        //         if (item.id == grid_id) {
+        //             missing = false;
+        //         }
+        //     })
+        //     if (missing) {
+        //         starting_grid.push({
+        //             "x": 0, "y": 0, "w": 8, "h": 5,
+        //             "id": grid_id,
+        //             "content": `<div class="bc-character" character-id="${character.id}">${pc_template}</div>`,
+        //         })
+        //     }
+        //     character.fetch_iframe(); // this should be safe to call twice, wfke will mark the elements and only run once
+        // })
+
         grid.on("change", () => {
             let layout = grid.save(false);
             localStorage.setItem(`bc_layout_${game_id}`, JSON.stringify(layout));
@@ -982,8 +1000,8 @@ var pc_template = `
 `
 
 var campaign_wrapper = `
-<div id="bc-campaign-wrapper">
-    <div id="bc-campaign-main">
+<div id="bc-wrapper">
+    <div id="bc-main">
         <div id="bc-header">
             <section class="">
                 <nav class="b-breadcrumb-a b-breadcrumb-b bc-breadcrumb">

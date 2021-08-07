@@ -1,12 +1,12 @@
 {
   "manifest_version": 2,
-  "name": "BeyondCampaigns",
+  "name": "Beyond Campaigns",
   "version": "1.0",
   "description": "Extra functionality for DnDBeyond",
   "browser_specific_settings": {
     "gecko": {
       "id": "{1aaceb45-b1f8-40a4-8001-4264120e9885}",
-      "strict_min_version": "48.0"
+      "strict_min_version": "75.0"
     }
   },
   "content_scripts": [
@@ -38,10 +38,40 @@
       ],
       "css": [
       ]
+    },
+    {
+      "all_frames": true,
+      "matches": [
+        "https://www.dndbeyond.com/combat-tracker/*",
+        "https://www.dndbeyond.com/encounters/*"
+      ],
+      "run_at": "document_start",
+      "js": [
+        "lib/jquery.min.js",
+        "combat.js"
+      ],
+      "css": [
+        "main.css",
+        "icons.css"
+      ]
+    },
+    {
+      "all_frames": true,
+      "matches": [
+        "https://gamescape.app/*"
+      ],
+      "run_at": "document_start",
+      "js": [
+        "lib/jquery.min.js",
+        "gamescape.js"
+      ],
+      "css": [
+      ]
     }
   ],
   "permissions": [
     "*://*.dndbeyond.com/*",
+    "*://*.gamescape.app/*",
     "webRequest"
   ]
 }
