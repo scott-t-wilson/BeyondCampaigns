@@ -22,8 +22,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Build
+    - name: Build webpack
       run: |
         npm install
         npm run-script build
-        web-ext build
+
+    - name: Build web-ext
+      uses: kewisch/action-web-ext@v1.0
+        with:
+            cmd: build
+            verbose: true
