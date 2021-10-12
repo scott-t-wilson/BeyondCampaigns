@@ -28,16 +28,19 @@
     "webpack": "^5.49.0",
     "webpack-cli": "^4.7.2"
   },
-  "webExt":{
+  "webExt": {
     "sourceDir": "dist",
     "verbose": true,
     "ignoreFiles": [
-        "readme.txt"
+      "readme.txt"
     ],
     "run": {
-        "firefox": "firefoxdeveloperedition",
-        "firefoxProfile": "webext",
-        "startUrl": ["https://www.dndbeyond.com/campaigns/2156849#bc_home"]
+      "firefox": "firefoxdeveloperedition",
+      "firefoxProfile": "webext",
+      "startUrl": [
+        "https://www.dndbeyond.com/campaigns/2156849#bc",
+        "https://www.dndbeyond.com/combat-tracker/219c70cc-5730-4b97-870c-d0d131f0c9c8#bc"
+      ]
     }
   }
 }

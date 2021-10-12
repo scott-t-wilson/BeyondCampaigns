@@ -6,7 +6,7 @@ module.exports = {
     node: {
         global: false,
     },
-    devtool: false,
+    devtool: 'source-map',
     // watch: true,
     watchOptions: {
         aggregateTimeout: 200,
@@ -15,6 +15,7 @@ module.exports = {
             '/node_modules/',
             '/.vscode/',
             '/notes/',
+            '/tests/',
             '/BeyondCampaigns.code-workspace'
         ],
     },

@@ -21,6 +21,7 @@
       ],
       "css": [
         "main.css",
+        "campaign.css",
         "icons.css",
         "lib/easymde.min.css",
         "lib/gridstack.min.css"
@@ -52,7 +53,10 @@
       ],
       "css": [
         "main.css",
-        "icons.css"
+        "combat.css",
+        "icons.css",
+        "roll.css",
+        "lib/gridstack.min.css"
       ]
     },
     {
