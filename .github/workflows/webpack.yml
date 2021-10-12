@@ -17,10 +17,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2.4.1
 
     - name: Build webpack
       run: |
@@ -39,3 +37,5 @@ jobs:
       with:
         name: beyond_campaigns-1.0.zip
         path: web-ext-artifacts/beyond_campaigns-1.0.zip
+
+# https://github.com/marketplace/actions/publish-release
