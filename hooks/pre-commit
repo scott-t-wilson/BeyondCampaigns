@@ -1,0 +1,37 @@
+#!/usr/local/bin/node
+
+const fs = require('fs');
+const execSync = require('child_process').execSync
+
+try {
+    // if version file was manually edited don't touch anything
+    let version_status = execSync('git status version.txt -s');
+    if(version_status.length > 0){
+        console.log("version.txt has been modified, do not update.")
+        return;
+    }
+    let version = fs.readFileSync("version.txt", 'utf8');
+    // build new version string
+    let version_split = version.match(/(\d*).(\d*).(\d*)/);
+    console.log("old:", version_split[0]);
+    let patch = parseInt(version_split[3]) + 1;
+    let new_version = `${version_split[1]}.${version_split[2]}.${patch}`;
+    console.log("new:", new_version);
+    fs.writeFileSync("version.txt", new_version + "\n");
+
+    // Update npm package.json
+    let data = JSON.parse(fs.readFileSync("package.json", 'utf8'))
+    data.version = new_version;
+    fs.writeFileSync("package.json", JSON.stringify(data, null, 2) + "\n");
+
+    // Update web-ext manifest.json
+    data = JSON.parse(fs.readFileSync("src/manifest.json", 'utf8'))
+    data.version = new_version;
+    fs.writeFileSync("src/manifest.json", JSON.stringify(data, null, 2) + "\n");
+
+    // Add the changes to commit
+    execSync('git add version.txt package.json src/manifest.json');
+
+} catch (err) {
+    console.error(err)
+}
