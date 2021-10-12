@@ -31,4 +31,5 @@ jobs:
       uses: kewisch/action-web-ext@v1.0
       with:
         cmd: build
+        source: dist
         verbose: true
