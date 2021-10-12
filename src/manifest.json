@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Beyond Campaigns",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Extra functionality for DnDBeyond",
   "browser_specific_settings": {
     "gecko": {
