@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Beyond Campaigns",
-  "version": "1.0",
+  "version": "0.0.6",
   "description": "Extra functionality for DnDBeyond",
   "browser_specific_settings": {
     "gecko": {
@@ -37,8 +37,7 @@
         "lib/jquery.min.js",
         "character.js"
       ],
-      "css": [
-      ]
+      "css": []
     },
     {
       "all_frames": true,
@@ -69,8 +68,7 @@
         "lib/jquery.min.js",
         "gamescape.js"
       ],
-      "css": [
-      ]
+      "css": []
     }
   ],
   "permissions": [
