@@ -29,6 +29,6 @@ jobs:
 
     - name: Build web-ext
       uses: kewisch/action-web-ext@v1.0
-        with:
-            cmd: build
-            verbose: true
+      with:
+        cmd: build
+        verbose: true
