@@ -33,3 +33,9 @@ jobs:
         cmd: build
         source: dist
         verbose: true
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: beyond_campaigns-1.0.zip
+        path: web-ext-artifacts/beyond_campaigns-1.0.zip
