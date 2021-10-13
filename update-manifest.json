@@ -1,0 +1,16 @@
+{
+  "addons": {
+    "{1aaceb45-b1f8-40a4-8001-4264120e9885}": {
+      "updates": [
+        {
+          "version": "0.0.20",
+          "update_link": "https://github.com/scott-t-wilson/BeyondCampaigns/releases/download/builds-0.0.20/beyond_campaigns-0.0.20.xpi"
+        },
+        {
+          "version": "0.0.23",
+          "update_link": "https://github.com/scott-t-wilson/BeyondCampaigns/releases/download/builds-0.0.23/beyond_campaigns-0.0.23.xpi"
+        }
+      ]
+    }
+  }
+}

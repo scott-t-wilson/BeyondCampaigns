@@ -116,3 +116,5 @@ dist
 
 # Local notes
 notes/*
+tests/*.json
+tests/data

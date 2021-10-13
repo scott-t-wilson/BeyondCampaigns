@@ -1,12 +1,13 @@
 {
   "manifest_version": 2,
   "name": "Beyond Campaigns",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "Extra functionality for DnDBeyond",
   "browser_specific_settings": {
     "gecko": {
       "id": "{1aaceb45-b1f8-40a4-8001-4264120e9885}",
-      "strict_min_version": "75.0"
+      "strict_min_version": "75.0",
+      "update_url": "https://github.com/scott-t-wilson/BeyondCampaigns/blob/main/update-manifest.json"
     }
   },
   "content_scripts": [
