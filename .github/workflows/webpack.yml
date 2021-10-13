@@ -35,14 +35,15 @@ jobs:
     - name: Create tag
       id: create_tag
       run: |
+        version=$(cat version.txt)
         tag=builds-$(cat version.txt)
         echo "::set-output name=tag::$tag"
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.4
       with:
-        name: beyond_campaigns-${{steps.create_tag.outputs.tag}}.xpi
-        path: web-ext-artifacts/beyond_campaigns-${{steps.create_tag.outputs.tag}}.zip
+        name: beyond_campaigns-${{steps.create_tag.outputs.version}}.xpi
+        path: web-ext-artifacts/beyond_campaigns-${{steps.create_tag.outputs.version}}.zip
 
     - name: Create Draft Release
       id: create_release
@@ -60,8 +61,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: beyond_campaigns-${{steps.create_tag.outputs.tag}}.xpi
-        asset_name: beyond_campaigns-${{steps.create_tag.outputs.tag}}.xpi
+        asset_path: beyond_campaigns-${{steps.create_tag.outputs.version}}.xpi
+        asset_name: beyond_campaigns-${{steps.create_tag.outputs.version}}.xpi
         asset_content_type: application/zip
 
     - uses: eregon/publish-release@v1
