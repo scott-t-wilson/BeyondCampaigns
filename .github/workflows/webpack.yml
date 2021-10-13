@@ -32,12 +32,6 @@ jobs:
         source: dist
         verbose: true
 
-  release:
-    name: Create GitHub Release
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-
     - name: Create tag
       id: create_tag
       run: |
