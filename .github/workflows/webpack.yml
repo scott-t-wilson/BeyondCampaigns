@@ -64,7 +64,7 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: web-ext-artifacts/beyond_campaigns-${{steps.create_tag.outputs.version}}.xpi
         asset_name: beyond_campaigns-${{steps.create_tag.outputs.version}}.xpi
-        # asset_content_type: application/zip
+        asset_content_type: application/x-xpinstall
 
     - uses: eregon/publish-release@v1
       env:
