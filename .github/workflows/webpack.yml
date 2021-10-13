@@ -37,6 +37,7 @@ jobs:
       run: |
         version=$(cat version.txt)
         tag=builds-$(cat version.txt)
+        echo "::set-output name=version::$version"
         echo "::set-output name=tag::$tag"
 
     - name: Upload a Build Artifact
