@@ -1,0 +1,153 @@
+.bc-roll-menu-wrapper {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	/* height: ; */
+	/* box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12); */
+	z-index: 1500;
+	color: #fff;
+	/* border-radius: 12px; */
+	/* background-color: #182026; */
+}
+
+div.bc-roll-menu {
+	position: absolute;
+	box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+	/* z-index: 1000; */
+	color: #fff;
+	/* min-width: 215px; */
+	border-radius: 12px;
+	background-color: #182026;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 30px;
+	letter-spacing: 0.39998px;
+	min-width: 26ch;
+}
+
+div.bc-roll-menu-type {
+	display: inline;
+}
+
+
+ul.bc-roll-menu {
+	list-style: none;
+}
+
+li.bc-roll-menu {
+	padding: 0 16px;
+}
+
+/* ul.bc-skill-roll {
+	padding: 0 24px;
+} */
+
+
+li.bc-roll-menu:hover,
+.bc-roll-menu-roll-button:hover {
+	background-color: rgb(61, 74, 88);
+	position: relative;
+	justify-content: flex-start;
+	margin: 0px;
+	border-radius: 12px;
+}
+
+li.bc-roll-menu>div {
+	display: inline;
+}
+
+
+.bc-roll-menu-roll-button {
+	border: 0;
+	display: block;
+	background-color: transparent;
+	width: 100%;
+	text-align: center;
+	font-size: 14px;
+	font-weight: 700;
+	padding: 12px;
+	color: #1B9AF0;
+	text-transform: uppercase;
+	line-height: 24.5px;
+	vertical-align: middle;
+	letter-spacing: 0.39998px;
+}
+
+hr.bc-roll-menu-divider {
+	display: block;
+	left: 0px;
+	border-top: 1px solid #444D5B;
+	margin: 0 0px;
+	width: 100%;
+}
+
+div.bc-roll-menu-mod {
+	display: inline-block !important;
+	width: 4ch;
+	padding-right: 1ch;
+	text-align: center;
+}
+
+.bc-roll-menu-heading {
+	border: 0;
+	background-color: transparent;
+	width: 100%;
+	text-align: center;
+	font-size: 14px;
+	font-weight: 700;
+	padding: 4px;
+	text-transform: uppercase;
+	line-height: 24.5px;
+	vertical-align: middle;
+	letter-spacing: 0.39998px;
+}
+
+
+
+.bc-action-roll-button {
+	color: #b43c35;
+	border: 1px solid #b43c35;
+	border-radius: 4px;
+	background-color: #fff;
+	white-space: nowrap;
+	font-size: 14px;
+	font-weight: 600;
+	font-family: Roboto Condensed,Open Sans,Helvetica,sans-serif;
+	line-height: 18px;
+	letter-spacing: 1px;
+	padding: 1px 4px 0;
+}
+
+.bc-action-roll-popup {
+    width: 14px;
+    /* float: right; */
+    border: 1px solid black;
+    border-radius: 0 5px 5px 0;
+    border-left: 0px;
+    background-image: url("icons/down.svg");
+    background-repeat: no-repeat;
+    background-position-y: 4px;
+    background-size: 12px;
+}
+
+.bc-action-roll-button:hover{
+	
+    background-color: #ebf1f5;
+    cursor: pointer;
+}
+
+.bc-action-stat-button{
+    width: 5ch;
+    float: right;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-image: url("icons/down.svg");
+    background-repeat: no-repeat;
+    background-position-y: 4px;
+    background-position-x: 3ch;
+    background-size: 12px;
+    text-align: right;
+    padding-right: 2ch
+}

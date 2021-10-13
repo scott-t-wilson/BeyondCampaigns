@@ -35,6 +35,10 @@
 	background-image: url("icons/plus-square.svg");
 }
 
+.bc-icon-dice {
+	background-image: url("icons/dice-6.svg");
+}
+
 .bc-icon:hover {
 	background-color: #57aec9;
 	border-color: #57aec9;

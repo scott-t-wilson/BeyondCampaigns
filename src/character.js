@@ -1,7 +1,11 @@
-import { waitForKeyElements, globals } from "./init.js";
+import { waitForKeyElements, globals, register_fetch, deep_compare } from "./init.js";
 import { Sifrr } from '@sifrr/storage';
+import { parseCharacter, compareCharacterJSON } from "./parseCharacter.js";
+// const parseCharacter = require('../src/parseCharacter.js');
 
 console.log("character.js: start", document.URL);
+
+let debug_data = {};
 
 // Grab the character id from URL
 let characterId_arr = document.URL.match(/https:\/\/www.dndbeyond.com\/profile\/.*\/characters\/(\d*)/);
@@ -9,23 +13,37 @@ if (characterId_arr && characterId_arr.length == 2) {
     globals.characterId = characterId_arr[1];
 };
 
+function downloadJsonFile(data, filename) {
+    // Creating a blob object from non-blob data using the Blob constructor
+    const blob = new Blob([JSON.stringify(data, undefined, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    // Create a new anchor element
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename || 'download';
+    a.click();
+    a.remove();
+}
+
 // Wait for auth token, then request character json
 waitForKeyElements(() => {
     return (globals.cobalt_token != undefined) && (globals.characterId != undefined);
 }, () => {
-    // fetch(
-    //     "https://character-service.dndbeyond.com/character/v5/character/" + globals.characterId, {
-    //     method: "GET",
-    //     cache: "no-cache",
-    //     credentials: "include",
-    //     headers: {
-    //         "Authorization": "Bearer " + globals.cobalt_token
-    //     }
-    // })
-    //     .then(response => response.json())
-    //     .then(json => {
-    //         parse_json(json.data);
-    //     });
+    fetch(
+        `https://character-service.dndbeyond.com/character/v5/character/${globals.characterId}`, {
+        method: "GET",
+        cache: "no-cache",
+        credentials: "include",
+        headers: {
+            "Authorization": "Bearer " + globals.cobalt_token
+        }
+    })
+        .then(response => response.json())
+        .then(json => {
+            console.log("character-service.dndbeyond.com");
+            debug_data["character_json"] = json.data;
+            debug_data["parsed_json"] = parseCharacter(json.data);
+        });
 }, {
     interval: 2000,
     maxIntervals: 30,
@@ -48,7 +66,9 @@ waitForKeyElements(() => {
     return avatar_targets.add(race_targets);
 }, () => {
     character = parse_dom();
-    db.set(character.id, { value: character });
+    if (character) {
+        db.set(character.id, { value: character });
+    }
 }, {
     interval: 2000,
     maxIntervals: 30,
@@ -65,8 +85,12 @@ function parse_json(data) {
 }
 
 function parse_dom() {
+    if ($(".ct-character-sheet-desktop").length == 0) {
+        console.log("Character sheet is mobile version, we can't parse.");
+        return null;
+    }
     let character = {
-        id: globals.characterId,
+        id: parseInt(globals.characterId),
         name: $(".ddbc-character-name").text(),
         level: $(".ddbc-character-progression-summary__level").text().slice(6),
         race: $(".ddbc-character-summary__race").text(),
@@ -78,33 +102,40 @@ function parse_dom() {
     console.log("chracter.js: background-image:", $(".ddbc-character-avatar__portrait").css("background-image"));
 
     let avatar_jq = $(".ddbc-character-avatar__portrait");
-    let avatar_background_image = avatar_jq.css("background-image");
-    if(avatar_background_image){
-        character.avatar_url = ($(".ddbc-character-avatar__portrait").css("background-image").match(/(https.*)\?/))[1];
-    }else{
+    let avatar_url = avatar_jq.css("background-image");
+    if (avatar_url) {
+        let url_matches = avatar_url.match(/(https.*)\?/);
+        if (url_matches && url_matches.length >= 1) {
+            character.avatarUrl = url_matches[1];
+        } else {
+            character.avatarUrl = "https://www.dndbeyond.com/Content/Skins/Waterdeep/images/characters/default-avatar-builder.png";
+        }
+    } else {
         console.log("chracter.js: no avatar elements:", avatar_jq);
     }
+    console.log(character.avatarUrl);
 
     let stats = {};
     $(".ddbc-ability-summary").each(function () {
         let obj = $(this);
-        let stat_name = obj.find(".ddbc-ability-summary__abbr").text()
+        let stat_name = obj.find(".ddbc-ability-summary__abbr").text().toLowerCase();
         stats[stat_name] = {
-            name: stat_name,
-            full_name: obj.find(".ddbc-ability-summary__label").text(),
-            value: obj.find(".ddbc-ability-summary__secondary").text(),
-            modifier: obj.find(".ddbc-ability-summary__primary").text(),
+            key: stat_name,
+            name: obj.find(".ddbc-ability-summary__label").text(),
+            value: parseInt(obj.find(".ddbc-ability-summary__secondary").text()),
+            modifier: parseInt(obj.find(".ddbc-ability-summary__primary").text()),
         }
     })
     character.stats = stats;
 
-    let saves = {};
+    let saves = {};  // TODO: add to json parser
     $(".ddbc-saving-throws-summary__ability").each(function () {
         let obj = $(this);
         let stat_name = obj.find(".ddbc-saving-throws-summary__ability-name").text()
         saves[stat_name] = {
             name: stat_name,
-            modifier: obj.find(".ddbc-saving-throws-summary__ability-modifier").text(),
+            modifier: parseInt(obj.find(".ddbc-saving-throws-summary__ability-modifier").text()),
+            adjustment: "",
         }
     })
     $(".ct-dice-adjustment-summary"); // TODO Talash has Adv on wis saves... figure it out
@@ -118,13 +149,14 @@ function parse_dom() {
         skills[skill_name.toLowerCase()] = {
             name: skill_name,
             stat: obj.find(".ct-skills__col--stat").text().toLowerCase(),
-            modifier: obj.find(".ct-skills__col--modifier").text(),
+            modifier: parseInt(obj.find(".ct-skills__col--modifier").text()),
             adjustment: adjustment || "",
         }
     });
     character.skills = skills;
+    console.log("character.skills:", character.skills);
 
-    let defenses = {
+    let defenses = {  // TODO: add to json parser
         "resistance": [],
         "immunity": [],
         "vulnerability": []
@@ -136,32 +168,58 @@ function parse_dom() {
         defenses[defense_type.toLowerCase()].push(damage_type);
     })
     character.defenses = defenses;
+    console.log("character.defenses:", character.defenses);
 
-    let conditions = [];
+    let conditions = [];  // TODO: add to json parser
     $(".ddbc-condition__name").each(function () {
         conditions.push($(this).text());
     });
     character.conditions = conditions;
+    console.log("character.conditions:", character.conditions);
 
-    character.passives = {
+    character.passives = {  // TODO: add to json parser
         perception: $("div.ct-senses__callout-label:contains('Passive WIS (Perception)')").prev().text(),
         investigation: $("div.ct-senses__callout-label:contains('Passive INT (Investigation')").prev().text(),
         insight: $("div.ct-senses__callout-label:contains('Passive WIS (Insight)')").prev().text(),
         senses: $("ct-senses__summary").text(),
     };
+    console.log("character.conditions:", character.conditions);
 
     character.health = {
-        hp_current: $("div.ct-health-summary__hp-item-label:contains('Current') + .ct-health-summary__hp-item-content").text(),
-        hp_max: $("div.ct-health-summary__hp-item-label:contains('Max') + .ct-health-summary__hp-item-content").text(),
-        hp_temp: $("div.ct-health-summary__hp-item-label:contains('Temp') + .ct-health-summary__hp-item-content").text(),
+        hp_current: parseInt($("div.ct-health-summary__hp-item-label:contains('Current') + .ct-health-summary__hp-item-content").text()),
+        hp_max: parseInt($("div.ct-health-summary__hp-item-label:contains('Max') + .ct-health-summary__hp-item-content").text()),
+        hp_temp: parseInt($("div.ct-health-summary__hp-item-label:contains('Temp') + .ct-health-summary__hp-item-content").text()),
     };
-
-    character.core = {
-        ac: $(".ddbc-armor-class-box__value").text(),
-        initiative: $(".ct-initiative-box__value").text(),
-        speed: $(".ct-speed-box__box-value").find(".ddbc-distance-number__number").text(),
-        languages: $(".ct-proficiency-groups__group-label:contains('Languages')").next().text(),
+    if (isNaN(character.health.hp_temp)) {
+        character.health.hp_temp = 0;
     }
+    console.log("character.health:", character.health);
+
+    let dom_languages = $(".ct-proficiency-groups__group-label:contains('Languages')").next().text().toLowerCase();
+    // let language_array = dom_languages.split(", ");
+    // language_array.sort();
+    character.core = {
+        ac: parseInt($(".ddbc-armor-class-box__value").text()),
+        initiative: parseInt($(".ct-initiative-box__value").text()),
+        speed: parseInt($(".ct-speed-box__box-value").find(".ddbc-distance-number__number").text()),
+        languages: dom_languages.split(", ").sort(),
+    }
+    console.log("character.core:", character.core);
+
+    debug_data["parsed_dom"] = character;
 
     return character;
 }
+
+// Wait for auth token, then request character json
+waitForKeyElements(() => {
+    return (debug_data.character_json != undefined) && (debug_data.parsed_dom != undefined)
+}, () => {
+    console.log("Parsing done, check for equality and download if needed");
+    if(!compareCharacterJSON(debug_data.parsed_dom, debug_data.parsed_json)){
+        downloadJsonFile(debug_data, `${globals.characterId}.json`);
+    }
+}, {
+    interval: 1000, maxIntervals: 30,
+});
+

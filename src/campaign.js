@@ -18,23 +18,23 @@ var campaign_info = {}
 var grid = null;
 var campaign_wrapper = null;
 var gEncounters = [];
-var gMonsters = [];
-var gCharacters = [];
+export var gMonsters = [];
+export var gCharacters = [];
 
 /******************************************************************************
  * 
- * REGISTER URL https://www.dndbeyond.com/campaigns/#bc_home
+ * REGISTER URL https://www.dndbeyond.com/campaigns/#bc
  * 
 ******************************************************************************/
 register_url(
-    "https://www.dndbeyond.com/campaigns/\\d*(#bc_home)?$",
+    "https://www.dndbeyond.com/campaigns/\\d*(#bc)?$",
     function load() {
         console.log("register_url load:", document.URL);
-        if (document.URL.match(/.*#bc_home$/)) {
+        if (document.URL.match(/.*#bc$/)) {
             start_beyond_campaign();
         }
         waitForKeyElements(".more-links__links", function () {
-            $(`<a class="bc-button" href="#bc_home">
+            $(`<a class="bc-button" href="#bc">
                     <span class="label bc-button-label">Beyond Campaigns</span>
                 </a>`)
                 .on("click", start_beyond_campaign)
@@ -141,6 +141,7 @@ class Encounter {
 class Monster {
     constructor(monster_id) {
         this.id = monster_id;
+        this.selector = `.bc-monster[monster-id=${this.id}]`;
         this.state = "loading";
         db.monsters.get(this.id.toString()).then(db_response => {
             let db_monster = db_response[this.id];
@@ -189,12 +190,20 @@ class Monster {
                 let api_monster = json.data[0];
                 merge(this, api_monster);
                 db.monsters.set(this.id.toString(), { value: this });
+
+                // this.roll_logger = new BCRollLogger({
+                //     entityId: this.id,   // 17165 (kenku) | 53497512 (Phil)
+                //     entityType: "monster",        // monster | character
+                //     contextName: this.name,         // Kenku | Phil
+                //     contextAvatarUrl: this.avatarUrl
+                // });
+        
                 this.state = "complete";
             });
     }
 }
 
-class Character {
+export class Character {
     constructor(character) {
         console.log("character.constructor pre-merge()", character);
         merge(this, character);
@@ -204,7 +213,12 @@ class Character {
         this.set_dom_basics();
         console.log("campaign_info:", campaign_info);
         console.log("game_id:", game_id);
-        this.roll_logger = new BCRollLogger(this, game_id);
+        this.roll_logger = new BCRollLogger({
+            entityId: this.id.toString(),   // 17165 (kenku) | 53497512 (Phil)
+            entityType: "character",        // monster | character
+            contextName: this.name,         // Kenku | Phil
+            contextAvatarUrl: this.avatarUrl
+        });
         // this.url = `https://www.dndbeyond.com/profile/${this.userName}/characters/${this.id}`;
         gCharacters.push(this);
         db.characters.get(this.id.toString()).then(db_response => {
@@ -273,7 +287,7 @@ class Character {
                 t.find(".bc-pc-hp-max").text(this.db_character.health.hp_max);
                 t.find(".bc-pc-hp-temp").text(this.db_character.health.hp_temp);
                 t.find(".bc-pc-main-stat-value-passive[stat='ac']").text(this.db_character.core.ac);
-                t.find(".bc-pc-stat-value[stat='initiative']").text(this.db_character.core.initiative);
+                t.find(".bc-pc-main-stat-value[stat='initiative']").text(this.db_character.core.initiative);
                 t.find(".bc-pc-main-stat-value-passive[stat='speed']").text(this.db_character.core.speed);
                 t.find(".bc-pc-language-value").text(this.db_character.core.languages);
                 t.find(".bc-pc-skill-value-passive").each((i, el) => {
@@ -354,17 +368,6 @@ class Character {
                 this.db_character.saves[stat].modifier
             );
 
-            // border-radius: 5px;
-            // display: inline;
-            // position: relative;
-            // background-repeat: no-repeat;
-            // background-position-y: .5px;
-            // padding-left: 2ch;
-            // /* margin-left: .5ch; */
-            // margin-right: 10px;
-            // font-size: 20px;
-
-
             Object.values(this.db_character.skills).forEach(skill => {
                 if (skill.stat == stat) {
                     let skill_item = $(`
@@ -429,7 +432,8 @@ class Character {
         console.log("rollModifer:", rollModifer);
         $(".bc-roll-popup-wrapper").remove();
         $("#bc-main").css("pointer-events", "auto");
-        this.roll_logger.d20({
+        this.roll_logger.roll({
+            d20: true,
             action: rollAction,  // Mace | con | Stealth
             rollType: rollType,  // damage | to hit | save | check
             rollKind: rollKind,  // disadvantage | advantage
@@ -718,7 +722,7 @@ function start_beyond_campaign() {
             // float: true,
         });
         let starting_grid = [];
-        let layout_json = localStorage.getItem(`bc_layout_${game_id}`);
+        let layout_json = localStorage.getItem(`bc_layout_campaign_${game_id}`);
         if (layout_json) {
             starting_grid = JSON.parse(layout_json);
             console.log(starting_grid);
@@ -758,7 +762,7 @@ function start_beyond_campaign() {
                     });
                 }
                 character.fetch_iframe(); // this should be safe to call twice, wfke will mark the elements and only run once
-                });
+            });
         });
         // gCharacters.forEach(character => {
         //     console.log("gCharacters entries:", character);
@@ -786,7 +790,7 @@ function start_beyond_campaign() {
         });
 
         console.log($(".grid-stack-item-content"));
-        $(".bc-icon-edit,.bc-icon-play-circle").hide();
+        // $(".bc-icon-edit,.bc-icon-play-circle").hide();
         $(".bc-heading").on("dblclick", event => {
             console.log($(event.currentTarget).parents("[gs-h]"));
             let item = $(event.currentTarget).parents("[gs-h]");
@@ -881,42 +885,6 @@ function load_grid_contents(layout) {
         }
     })
 }
-
-/******************************************************************************
- * 
- * REGISTER GAMELOG
- * 
-******************************************************************************/
-gamelog.listen(function (json) {
-    // <div>Zach McShort|Unarmed Strike|to hit||1d20+4|5</div>
-    // <div>Zach McShort|Crossbow, Light|damage||1d8|1</div>
-    // <div>Zach McShort|Mace|damage||1d6+2|6</div>
-    // <div>Zach McShort|con|save||1d20+5|6</div>
-    // <div>Zach McShort|con|save|advantage|2d20kh1+5|19</div>
-    // <div>Zach McShort|Stealth|check||1d20|9</div>
-    // <div>Zach McShort|Stealth|check|disadvantage|2d20kl1|3</div>
-    console.log("gamelog:", json);
-    if (json.eventType == "dice/roll/fulfilled") {
-        // json.dateTime
-        // "dateTime": "1627510266612",
-        //  ${json.data.context.name}|${json.data.action}|${json.data.rolls[0].rollType}|${json.data.rolls[0].rollKind}|${json.data.rolls[0].diceNotationStr}|${json.data.rolls[0].result.text}|${json.data.rolls[0].result.total}</div>`
-        let entry = $(gamelog_template_html);
-        $(".bc-gamelog").append(entry);
-        entry.find(".bc-gamelog-name").text(json.data.context.name);
-        if (json.data.rolls[0].rollKind == "advantage") {
-            entry.find(".bc-icon-inline").attr("adjustment", "Advantage");
-        }
-        if (json.data.rolls[0].rollKind == "disadvantage") {
-            entry.find(".bc-icon-inline").attr("adjustment", "Disadvantage");
-        }
-        entry.find(".bc-gamelog-roll-action").text(json.data.action);
-        entry.find(".bc-gamelog-roll-type").text(json.data.rolls[0].rollType);
-        entry.find(".bc-gamelog-result-total").text(json.data.rolls[0].result.total);
-        entry.find(".bc-gamelog-dice-notation").text(json.data.rolls[0].diceNotationStr);
-        entry.find(".bc-gamelog-detail-text").text(json.data.rolls[0].result.text);
-        entry[0].scrollIntoView();
-    }
-});
 
 var pc_template = `
 <div class="bc-pc-main-wrapper">
@@ -1041,11 +1009,11 @@ var encounter_list_html = `
 </div>
 `
 
-var roll_template_html = `
+export var roll_template_html = `
 <div class="bc-roll-popup-wrapper">
 <div class="bc-roll-popup">
     <div class="bc-roll-popup-heading"></div>
-    <hr class="bc-divider">
+    <hr class="bc-roll-divider">
     <ul class="bc-roll-popup bc-roll-type">
         <li class="bc-roll-popup" bc-roll-type="check">
             <div class="bc-roll-popup-mod">-</div>
@@ -1058,7 +1026,7 @@ var roll_template_html = `
             <div class="bc-icon-check"></div>
         </li>
     </ul>
-    <hr class="bc-divider">
+    <hr class="bc-roll-divider">
     <ul class="bc-roll-popup bc-roll-kind">
         <li class="bc-roll-popup" bc-roll-kind="advantage">
             <div class="bc-icon-left-gutter bc-icon-advantage"></div>Advantage<div
@@ -1072,27 +1040,11 @@ var roll_template_html = `
             <div class="bc-icon-left-gutter bc-icon-disadvantage"></div>Disadvantage<div class="bc-icon-check"></div>
         </li>
     </ul>
-    <hr class="bc-divider">
+    <hr class="bc-roll-divider">
     <button class="bc-roll-button MuiButtonBase-root MuiButton-root"
         tabindex="0" type="button">
         <span class="MuiButton-label">Roll</span>
     </button>
 </div>
-</div>
-`
-
-var gamelog_template_html = `
-<div class="bc-gamelog-entry">
-    <div class="bc-gamelog-name">Zach McShort</div>
-        <div class="bc-icon-inline" adjustment=""></div>
-        <div class="bc-gamelog-roll-action">Insight</div>:
-        <div class="bc-gamelog-roll-type">check</div>
-        <div class="bc-gamelog-result-total">7</div>
-    </div>
-    <div class="bc-gamelog-entry bc-gamelog-detail">
-        <div class="bc-gamelog-dice-notation">1d20+7</div>
-        <div class="bc-gamelog-detail-result">
-        <div class="bc-gamelog-detail-text">5+7</div>
-    </div>
 </div>
 `

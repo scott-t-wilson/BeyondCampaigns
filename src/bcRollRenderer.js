@@ -237,16 +237,24 @@ export class BCRollRenderer {
 var rollRender = new BCRollRenderer()
 
 
+//
+// new BCRollLogger({
+//     entityId: character.id.toString(),
+//     entityType: "character",
+//     contextName: character.name,
+//     contextAvatarUrl: character.avatarUrl,
+// })
+//
 export class BCRollLogger {
 
-    constructor(character, gameId) {
+    constructor(options) {
         this.id = null; // set to fresh uuid when logged
         this.dateTime = null; // set when logged
         this.gameId = globals.gameId;
         this.userId = globals.userId;
         this.source = "web";
-        this.entityId = character.id.toString();
-        this.entityType = "character";
+        this.entityId = options.entityId;
+        this.entityType = options.entityType;
         this.eventType = "dice/roll/fulfilled"; //dice/roll/pending
         this.persist = true;
         this.messageScope = "gameId";
@@ -256,10 +264,10 @@ export class BCRollLogger {
             rolls: [],
             action: "",
             context: {
-                entityId: character.id.toString(),
-                entityType: "character",
-                name: character.name,
-                avatarUrl: character.avatarUrl,
+                entityId: options.entityId,
+                entityType: options.entityType,
+                name: options.contextName,
+                avatarUrl: options.contextAvatarUrl,
                 messageScope: "gameId",
                 messageTarget: globals.gameId,
             },
@@ -268,29 +276,46 @@ export class BCRollLogger {
         };
     }
 
-    set_user_game(userId, gameId){
-        this.userId = userId.toString();
-        this.gameId = gameId.toString();
-        if(this.messageScope == "gameId"){
-            this.messageTarget = gameId.toString();
-        }
-        if(this.messageScope == "gameId"){
-            this.messageTarget = gameId.toString();
-        }
-        if(this.data.context.messageScope == "gameId"){
-            this.data.context.messageTarget = gameId.toString();
-        }
-   }
+    // set_user_game(userId, gameId) {
+    //     this.userId = userId.toString();
+    //     this.gameId = gameId.toString();
+    //     if (this.messageScope == "gameId") {
+    //         this.messageTarget = gameId.toString();
+    //     }
+    //     if (this.messageScope == "gameId") {
+    //         this.messageTarget = gameId.toString();
+    //     }
+    //     if (this.data.context.messageScope == "gameId") {
+    //         this.data.context.messageTarget = gameId.toString();
+    //     }
+    // }
 
-    d20(options){
+    roll(options) {
         // options = {
-        //     action: "",  // Mace | con | Stealth
-        //     rollType: "",  // damage | to hit | save | check
-        //     rollKind: "",  // disadvantage | advantage
+        //     action: "",  // Mace | con | Stealth | Initiative
+        //     rollType: "",  // damage | to hit | save | check | roll
+        //     rollKind: "",  // disadvantage | advantage | critical hit
         //     modifer: "",  // +X | -Y
         //     log: true|false  send to gameLog
         // }
-    
+        if (options.d20 == undefined) {
+            options.d20 = true;
+        }
+        if(options.notation == undefined){
+            options.notation = "1d20";
+        }
+        if(options.publicRoll === false){
+            this.messageScope = "userId";
+            this.messageTarget = this.userId;
+            this.data.context.messageScope = "userId";
+            this.data.context.messageTarget = this.userId;
+        }else{
+            this.messageScope = "gameId";
+            this.messageTarget = this.gameId;
+            this.data.context.messageScope = "gameId";
+            this.data.context.messageTarget = this.gameId;
+        }
+
         let api_roll = {
             diceNotation: {
                 set: [{
@@ -302,81 +327,93 @@ export class BCRollLogger {
                 }],
                 constant: 0
             },
-            diceNotationStr: "",
-            rollType: "",
-            rollKind: "",
+            diceNotationStr: options.notation,
+            rollType: options.rollType,
+            rollKind: options.rollKind,
         }
-    
         this.data.action = options.action;
         this.data.rollId = uuidv4();
 
-        // Build the roll string for a d20
-        let rollString = "1d20";
-        if(options.rollKind == "advantage"){
-            rollString = "2d20kh1";
-            // still have no idea what these mean
-            api_roll.diceNotation.set[0].operation = 2;
-            api_roll.diceNotation.set[0].operand = 1;
+        if (options.d20) {
+            // Build the roll string for a d20
+            if (options.rollKind == "advantage") {
+                api_roll.diceNotationStr = "2d20kh1";
+                // still have no idea what these mean
+                api_roll.diceNotation.set[0].operation = 2;
+                api_roll.diceNotation.set[0].operand = 1;
+            }
+            if (options.rollKind == "disadvantage") {
+                api_roll.diceNotationStr = "2d20kl1";
+                // still have no idea what these mean
+                api_roll.diceNotation.set[0].operation = 2;
+                api_roll.diceNotation.set[0].operand = 1;
+            }
+            // Format the bonus so we don't have a '+-1'
+            let bonus = parseInt(options.modifer);
+            if (bonus > 0) {
+                api_roll.diceNotationStr += "+" + bonus;
+            }
+            if (bonus < 0) {
+                api_roll.diceNotationStr += bonus;
+            }
+            api_roll.diceNotation.constant = bonus;
+        } else {
+            let arr = api_roll.diceNotationStr.match(/([\\+-]\d*)/);
+            console.log("api_roll.diceNotationStr.match:", arr);
+            if (arr && arr.length == 2) {
+                api_roll.diceNotation.constant = parseInt(arr[1]);
+            }
+            if(options.rollKind == "critical"){
+                let re = /(\d+)d/g;
+                api_roll.diceNotationStr = re[Symbol.replace](api_roll.diceNotationStr, m =>{
+                    return parseInt(m)*2 + "d"
+                });
+            }
         }
-        if(options.rollKind == "disadvantage"){
-            rollString = "2d20kl1";
-            // still have no idea what these mean
-            api_roll.diceNotation.set[0].operation = 2;
-            api_roll.diceNotation.set[0].operand = 1;
-        }
-        // Format the bonus so we don't have a '+-1'
-        let bonus = parseInt(options.modifer);
-        if (bonus > 0) {
-            rollString += "+" + bonus;
-        }
-        if (bonus < 0) {
-            rollString += bonus;
-        }
-        api_roll.diceNotation.constant = bonus;
-        
         // Roll it!
-        let roll = dice.roll(rollString);
+        console.log("api_roll:", api_roll);
+        let roll = dice.roll(api_roll.diceNotationStr);
+        console.log("roll:", roll);
 
         // Put together the result
         let result = {
-            constant: bonus,
+            constant: api_roll.diceNotation.constant,
             values: [],
             total: roll.value,
             text: rollRender.render(roll)
-        }        
+        }
         // NOTE: if we decide to do a pre-roll message, don't assign this yet
         api_roll.result = result;
-        
+
         // Assemble the die notation
         let inner_rolls = roll.rolls;
-        if(roll.dice){
+        if (roll.dice) {
             inner_rolls = roll.dice[0].rolls;
         }
-        inner_rolls.forEach(die => { 
+        // TODO: This breaks if there is more than one kind of die
+        inner_rolls.forEach(die => {
             api_roll.diceNotation.set[0].dice.push({
-                dieType: "d20",
+                dieType: "d" + die.die,
                 dieValue: die.value
             });
+            api_roll.diceNotation.set[0].dieType = "d" + die.die;
             result.values.push(die.value.toString())
         })
         api_roll.diceNotation.set[0].count = inner_rolls.length;
-        api_roll.diceNotationStr = rollString;
-        api_roll.rollType = options.rollType;
-        api_roll.rollKind = options.rollKind;
         this.data.rolls = [api_roll];
 
 
-        if(options.log){
-            this.log(); 
+        if (options.log) {
+            this.log();
         }
         return result.total;
     }
 
-    log(){
+    log() {
         this.id = uuidv4();
         this.dateTime = Date.now().toString();
-        console.dir(this);
-        gamelog.send(this);     
+        // console.dir(this);
+        gamelog.send(this);
     }
 
     render(roll) {
@@ -391,7 +428,7 @@ export class BCRollLogger {
 //     userId: 110560288,
 //     id: 110560288,
 // }, 2156849);
- 
+
 // roll_logger.d20({
 //     action: "con",  // Mace | con | Stealth
 //     rollType: "check",  // damage | to hit | save | check

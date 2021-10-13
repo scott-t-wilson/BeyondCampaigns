@@ -88,6 +88,7 @@ export var globals = {};
                             body = undefined;
                         } else if (/application\/json/.test(result.headers.get('content-type'))) {
                             body = JSON.parse(text);
+                            body["_BC_url"] = url;
                         }
                         let fetch_proxies = document.querySelectorAll('fetch_proxy_url');
                         fetch_proxies.forEach(proxy_div => {
@@ -416,3 +417,94 @@ export function waitForKeyElements(selectorOrFunction, callback, options) {
             selectorOrFunction, callback, opt.iframeSelector);
     }
 }
+
+function update_character_vitals(character_id) {
+    console.log("update_character_vitals");
+    fetch(
+        `https://character-service.dndbeyond.com/character/v5/character/${character_id}`, {
+        method: "GET",
+        cache: "no-cache",
+        credentials: "include",
+        headers: {
+            "Authorization": "Bearer " + globals.cobalt_token
+        }
+    })
+        .then(response => {
+            return response.json();
+        })
+        .then(json => {
+            console.log("update_character_vitals json:", json);
+            // json.baseHitPoints
+            // json.bonusHitPoints
+            // json.temporaryHitPoints
+        })
+}
+
+
+/******************************************************************************
+ * 
+ * REGISTER GAMELOG CHARACTER UPDATES
+ * 
+******************************************************************************/
+gamelog.listen(function (json) {
+    if (json.gameId == globals.gameId &&
+        json.entityType == "character" &&
+        json.eventType == "character-sheet/character-update/fulfilled"
+    ) {
+        console.log("character update, id:", json.entityId);
+        update_character_vitals(json.entityId);
+    }
+});
+
+/******************************************************************************
+ * 
+ * REGISTER GAMELOG ROLLS
+ * 
+******************************************************************************/
+gamelog.listen(function (json) {
+    // <div>Zach McShort|Unarmed Strike|to hit||1d20+4|5</div>
+    // <div>Zach McShort|Crossbow, Light|damage||1d8|1</div>
+    // <div>Zach McShort|Mace|damage||1d6+2|6</div>
+    // <div>Zach McShort|con|save||1d20+5|6</div>
+    // <div>Zach McShort|con|save|advantage|2d20kh1+5|19</div>
+    // <div>Zach McShort|Stealth|check||1d20|9</div>
+    // <div>Zach McShort|Stealth|check|disadvantage|2d20kl1|3</div>
+    let gamelog_div = $(".bc-gamelog");
+    console.log("gamelog:", json);
+    if (gamelog_div.length > 0 && json.eventType == "dice/roll/fulfilled") {
+        // json.dateTime
+        // "dateTime": "1627510266612",
+        //  ${json.data.context.name}|${json.data.action}|${json.data.rolls[0].rollType}|${json.data.rolls[0].rollKind}|${json.data.rolls[0].diceNotationStr}|${json.data.rolls[0].result.text}|${json.data.rolls[0].result.total}</div>`
+        let entry = $(gamelog_template_html);
+        $(".bc-gamelog").append(entry);
+        entry.find(".bc-gamelog-name").text(json.data.context.name);
+        if (json.data.rolls[0].rollKind == "advantage") {
+            entry.find(".bc-icon-inline").attr("adjustment", "Advantage");
+        }
+        if (json.data.rolls[0].rollKind == "disadvantage") {
+            entry.find(".bc-icon-inline").attr("adjustment", "Disadvantage");
+        }
+        entry.find(".bc-gamelog-roll-action").text(json.data.action);
+        entry.find(".bc-gamelog-roll-type").text(json.data.rolls[0].rollType);
+        entry.find(".bc-gamelog-result-total").text(json.data.rolls[0].result.total);
+        entry.find(".bc-gamelog-dice-notation").text(json.data.rolls[0].diceNotationStr);
+        entry.find(".bc-gamelog-detail-text").text(json.data.rolls[0].result.text);
+        entry[0].scrollIntoView();
+    }
+});
+  
+var gamelog_template_html = `
+<div class="bc-gamelog-entry">
+    <div class="bc-gamelog-name">Zach McShort</div>
+        <div class="bc-icon-inline" adjustment=""></div>
+        <div class="bc-gamelog-roll-action">Insight</div>:
+        <div class="bc-gamelog-roll-type">check</div>
+        <div class="bc-gamelog-result-total">7</div>
+    </div>
+    <div class="bc-gamelog-entry bc-gamelog-detail">
+        <div class="bc-gamelog-dice-notation">1d20+7</div>
+        <div class="bc-gamelog-detail-result">
+        <div class="bc-gamelog-detail-text">5+7</div>
+    </div>
+</div>
+`
