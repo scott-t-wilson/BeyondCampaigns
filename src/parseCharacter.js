@@ -1,3 +1,5 @@
+const util = require('util');
+
 const rules = {
     "stats": [
         {
@@ -375,6 +377,712 @@ const rules = {
             "description": "<p>When you attempt to influence someone or a group of people with tact, social graces, or good nature, the GM might ask you to make a Charisma (Persuasion) check. Typically, you use persuasion when acting in good faith, to foster friendships, make cordial requests, or exhibit proper etiquette. Examples of persuading others include convincing a chamberlain to let your party see the king, negotiating peace between warring tribes, or inspiring a crowd of townsfolk.</p>\r\n"
         }
     ],
+    "conditions": [
+        {
+            "definition": {
+                "id": 1,
+                "entityTypeId": 1737492944,
+                "name": "Blinded",
+                "type": 1,
+                "description": "<ul>\r\n<li>A blinded creature can't see and automatically fails any ability check that requires sight.</li>\r\n<li>Attack rolls against the creature have advantage, and the creature's attack rolls have disadvantage.</li>\r\n</ul>",
+                "slug": "blinded",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 2,
+                "entityTypeId": 1737492944,
+                "name": "Charmed",
+                "type": 1,
+                "description": "<ul>\r\n<li>A charmed creature can't attack the charmer or target the charmer with harmful abilities or magical effects.</li>\r\n<li>The charmer has advantage on any ability check to interact socially with the creature.</li>\r\n</ul>",
+                "slug": "charmed",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 3,
+                "entityTypeId": 1737492944,
+                "name": "Deafened",
+                "type": 1,
+                "description": "<ul>\r\n<li>A deafened creature can't hear and automatically fails any ability check that requires hearing.</li>\r\n</ul>",
+                "slug": "deafened",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 4,
+                "entityTypeId": 1737492944,
+                "name": "Exhaustion",
+                "type": 2,
+                "description": "<p>Some special abilities and environmental hazards, such as starvation and the long-term effects of freezing or scorching temperatures, can lead to a special condition called exhaustion. Exhaustion is measured in six levels. An effect can give a creature one or more levels of exhaustion, as specified in the effect's description.</p>\r\n<table class=\"exhaustion-levels\">\r\n<thead>\r\n<tr>\r\n<th class=\"exhaustionlevel\">Level</th>\r\n<th>Effect</th>\r\n</tr>\r\n</thead>\r\n<tbody>\r\n<tr>\r\n<td>1</td>\r\n<td style=\"text-align: left;\">Disadvantage on ability checks</td>\r\n</tr>\r\n<tr>\r\n<td>2</td>\r\n<td style=\"text-align: left;\">Speed halved</td>\r\n</tr>\r\n<tr>\r\n<td>3</td>\r\n<td style=\"text-align: left;\">Disadvantage on attack rolls and saving throws</td>\r\n</tr>\r\n<tr>\r\n<td>4</td>\r\n<td style=\"text-align: left;\">Hit point maximum halved</td>\r\n</tr>\r\n<tr>\r\n<td>5</td>\r\n<td style=\"text-align: left;\">Speed reduced to 0</td>\r\n</tr>\r\n<tr>\r\n<td>6</td>\r\n<td style=\"text-align: left;\">Death</td>\r\n</tr>\r\n</tbody>\r\n</table>\r\n<p>If an already exhausted creature suffers another effect that causes exhaustion, its current level of exhaustion increases by the amount specified in the effect's description.</p>\r\n<p>A creature suffers the effect of its current level of exhaustion as well as all lower levels. For example, a creature suffering level 2 exhaustion has its speed halved and has disadvantage on ability checks.</p>\r\n<p>An effect that removes exhaustion reduces its level as specified in the effect's description, with all exhaustion effects ending if a creature's exhaustion level is reduced below 1. <br /> Finishing a long rest reduces a creature's exhaustion level by 1, provided that the creature has also ingested some food and drink.</p>",
+                "slug": "exhaustion",
+                "levels": [
+                    {
+                        "definition": {
+                            "id": 1,
+                            "entityTypeId": 2064013312,
+                            "level": 1,
+                            "effect": "Disadvantage on ability checks"
+                        }
+                    },
+                    {
+                        "definition": {
+                            "id": 2,
+                            "entityTypeId": 2064013312,
+                            "level": 2,
+                            "effect": "Speed halved"
+                        }
+                    },
+                    {
+                        "definition": {
+                            "id": 3,
+                            "entityTypeId": 2064013312,
+                            "level": 3,
+                            "effect": "Disadvantage on attack rolls and saving throws"
+                        }
+                    },
+                    {
+                        "definition": {
+                            "id": 4,
+                            "entityTypeId": 2064013312,
+                            "level": 4,
+                            "effect": "Hit point maximum halved"
+                        }
+                    },
+                    {
+                        "definition": {
+                            "id": 5,
+                            "entityTypeId": 2064013312,
+                            "level": 5,
+                            "effect": "Speed reduced to 0"
+                        }
+                    },
+                    {
+                        "definition": {
+                            "id": 6,
+                            "entityTypeId": 2064013312,
+                            "level": 6,
+                            "effect": "Death"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "definition": {
+                "id": 5,
+                "entityTypeId": 1737492944,
+                "name": "Frightened",
+                "type": 1,
+                "description": "<ul>\r\n<li>A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight.</li>\r\n<li>The creature can't willingly move closer to the source of its fear.</li>\r\n</ul>",
+                "slug": "frightened",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 6,
+                "entityTypeId": 1737492944,
+                "name": "Grappled",
+                "type": 1,
+                "description": "<ul>\r\n<li>A grappled creature's speed becomes 0, and it can't benefit from any bonus to its speed.</li>\r\n<li>The condition ends if the grappler is incapacitated (see the condition).</li>\r\n<li>The condition also ends if an effect removes the grappled creature from the reach of the grappler or grappling effect, such as when a creature is hurled away by the <strong>thunder-wave</strong> spell.</li>\r\n</ul>",
+                "slug": "grappled",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 7,
+                "entityTypeId": 1737492944,
+                "name": "Incapacitated",
+                "type": 1,
+                "description": "<ul>\r\n<li>An incapacitated creature can't take actions or reactions.</li>\r\n</ul>",
+                "slug": "incapacitated",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 8,
+                "entityTypeId": 1737492944,
+                "name": "Invisible",
+                "type": 1,
+                "description": "<ul>\r\n<li>An invisible creature is impossible to see without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured. The creature's location can be detected by any noise it makes or any tracks it leaves.</li>\r\n<li>Attack rolls against the creature have disadvantage, and the creature's attack rolls have advantage.</li>\r\n</ul>",
+                "slug": "invisible",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 9,
+                "entityTypeId": 1737492944,
+                "name": "Paralyzed",
+                "type": 1,
+                "description": "<ul>\r\n<li>A paralyzed creature is incapacitated (see the condition) and can't move or speak.</li>\r\n<li>The creature automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage.</li>\r\n<li>Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.</li>\r\n</ul>",
+                "slug": "paralyzed",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 10,
+                "entityTypeId": 1737492944,
+                "name": "Petrified",
+                "type": 1,
+                "description": "<ul>\r\n<li>A petrified creature is transformed, along with any nonmagical object it is wearing or carrying, into a solid inanimate substance (usually stone). Its weight increases by a factor of ten, and it ceases aging.</li>\r\n<li>The creature is incapacitated (see the condition), can't move or speak, and is unaware of its surroundings.</li>\r\n<li>Attack rolls against the creature have advantage.</li>\r\n<li>The creature automatically fails Strength and Dexterity saving throws.</li>\r\n<li>The creature has resistance to all damage.</li>\r\n<li>The creature is immune to poison and disease, although a poison or disease already in its system is suspended, not neutralized.</li>\r\n</ul>",
+                "slug": "petrified",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 11,
+                "entityTypeId": 1737492944,
+                "name": "Poisoned",
+                "type": 1,
+                "description": "<ul>\r\n<li>A poisoned creature has disadvantage on attack rolls and ability checks.</li>\r\n</ul>",
+                "slug": "poisoned",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 12,
+                "entityTypeId": 1737492944,
+                "name": "Prone",
+                "type": 1,
+                "description": "<ul>\r\n<li>A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition.</li>\r\n<li>The creature has disadvantage on attack rolls.</li>\r\n<li>An attack roll against the creature has advantage if the attacker is within 5 feet of the creature. Otherwise, the attack roll has disadvantage.</li>\r\n</ul>",
+                "slug": "prone",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 13,
+                "entityTypeId": 1737492944,
+                "name": "Restrained",
+                "type": 1,
+                "description": "<ul>\r\n<li>A restrained creature's speed becomes 0, and it can't benefit from any bonus to its speed.</li>\r\n<li>Attack rolls against the creature have advantage, and the creature's attack rolls have disadvantage.</li>\r\n<li>The creature has disadvantage on Dexterity saving throws.</li>\r\n</ul>",
+                "slug": "restrained",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 14,
+                "entityTypeId": 1737492944,
+                "name": "Stunned",
+                "type": 1,
+                "description": "<ul>\r\n<li>A stunned creature is incapacitated (see the condition), can't move, and can speak only falteringly.</li>\r\n<li>The creature automatically fails Strength and Dexterity saving throws.</li>\r\n<li>Attack rolls against the creature have advantage.</li>\r\n</ul>",
+                "slug": "stunned",
+                "levels": []
+            }
+        },
+        {
+            "definition": {
+                "id": 15,
+                "entityTypeId": 1737492944,
+                "name": "Unconscious",
+                "type": 1,
+                "description": "<ul>\r\n<li>An unconscious creature is incapacitated (see the condition), can't move or speak, and is unaware of its surroundings</li>\r\n<li>The creature drops whatever it's holding and falls prone.</li>\r\n<li>The creature automatically fails Strength and Dexterity saving throws.</li>\r\n<li>Attack rolls against the creature have advantage.</li>\r\n<li>Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.</li>\r\n</ul>",
+                "slug": "unconscious",
+                "levels": []
+            }
+        }
+    ],
+    "damageAdjustments": [
+        {
+            "id": 1,
+            "name": "Bludgeoning",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "bludgeoning",
+            "isMulti": false
+        },
+        {
+            "id": 2,
+            "name": "Piercing",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "piercing",
+            "isMulti": false
+        },
+        {
+            "id": 3,
+            "name": "Slashing",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "slashing",
+            "isMulti": false
+        },
+        {
+            "id": 4,
+            "name": "Lightning",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "lightning",
+            "isMulti": false
+        },
+        {
+            "id": 5,
+            "name": "Thunder",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "thunder",
+            "isMulti": false
+        },
+        {
+            "id": 6,
+            "name": "Poison",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "poison",
+            "isMulti": false
+        },
+        {
+            "id": 7,
+            "name": "Cold",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "cold",
+            "isMulti": false
+        },
+        {
+            "id": 8,
+            "name": "Radiant",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "radiant",
+            "isMulti": false
+        },
+        {
+            "id": 9,
+            "name": "Fire",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "fire",
+            "isMulti": false
+        },
+        {
+            "id": 10,
+            "name": "Necrotic",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "necrotic",
+            "isMulti": false
+        },
+        {
+            "id": 11,
+            "name": "Acid",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "acid",
+            "isMulti": false
+        },
+        {
+            "id": 12,
+            "name": "Psychic",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "psychic",
+            "isMulti": false
+        },
+        {
+            "id": 13,
+            "name": "Bludgeoning, Piercing, and Slashing from Nonmagical Attacks",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "bludgeoning-piercing-and-slashing-from-nonmagical-attacks",
+            "isMulti": true
+        },
+        {
+            "id": 14,
+            "name": "Bludgeoning, Piercing, and Slashing from Nonmagical Attacks that aren't Silvered",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "bludgeoning-piercing-and-slashing-from-nonmagical-attacks-that-arent-silvered",
+            "isMulti": true
+        },
+        {
+            "id": 15,
+            "name": "Bludgeoning, Piercing, and Slashing from Nonmagical Attacks that aren't Adamantine",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "bludgeoning-piercing-and-slashing-from-nonmagical-attacks-that-arent-adamantine",
+            "isMulti": true
+        },
+        {
+            "id": 16,
+            "name": "Piercing and Slashing from Nonmagical Attacks that aren't Adamantine",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "piercing-and-slashing-from-nonmagical-attacks-that-arent-adamantine",
+            "isMulti": true
+        },
+        {
+            "id": 17,
+            "name": "Bludgeoning",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "bludgeoning",
+            "isMulti": false
+        },
+        {
+            "id": 18,
+            "name": "Piercing",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "piercing",
+            "isMulti": false
+        },
+        {
+            "id": 19,
+            "name": "Slashing",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "slashing",
+            "isMulti": false
+        },
+        {
+            "id": 20,
+            "name": "Lightning",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "lightning",
+            "isMulti": false
+        },
+        {
+            "id": 21,
+            "name": "Thunder",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "thunder",
+            "isMulti": false
+        },
+        {
+            "id": 22,
+            "name": "Poison",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "poison",
+            "isMulti": false
+        },
+        {
+            "id": 23,
+            "name": "Cold",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "cold",
+            "isMulti": false
+        },
+        {
+            "id": 24,
+            "name": "Radiant",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "radiant",
+            "isMulti": false
+        },
+        {
+            "id": 25,
+            "name": "Fire",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "fire",
+            "isMulti": false
+        },
+        {
+            "id": 26,
+            "name": "Necrotic",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "necrotic",
+            "isMulti": false
+        },
+        {
+            "id": 27,
+            "name": "Acid",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "acid",
+            "isMulti": false
+        },
+        {
+            "id": 28,
+            "name": "Psychic",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "psychic",
+            "isMulti": false
+        },
+        {
+            "id": 29,
+            "name": "Bludgeoning, Piercing, and Slashing from Nonmagical Attacks",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "bludgeoning-piercing-and-slashing-from-nonmagical-attacks",
+            "isMulti": true
+        },
+        {
+            "id": 30,
+            "name": "Bludgeoning, Piercing, and Slashing from Nonmagical Attacks that aren't Silvered",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "bludgeoning-piercing-and-slashing-from-nonmagical",
+            "isMulti": true
+        },
+        {
+            "id": 31,
+            "name": "Bludgeoning, Piercing, and Slashing from Nonmagical Attacks that aren't Adamantine",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "bludgeoning-piercing-and-slashing-from-nonmagical",
+            "isMulti": true
+        },
+        {
+            "id": 32,
+            "name": "Piercing and Slashing from Nonmagical Attacks that aren't Adamantine",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "piercing-and-slashing-from-nonmagical-attacks-that",
+            "isMulti": true
+        },
+        {
+            "id": 33,
+            "name": "Bludgeoning",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "bludgeoning",
+            "isMulti": false
+        },
+        {
+            "id": 34,
+            "name": "Piercing",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "piercing",
+            "isMulti": false
+        },
+        {
+            "id": 35,
+            "name": "Slashing",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "slashing",
+            "isMulti": false
+        },
+        {
+            "id": 36,
+            "name": "Lightning",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "lightning",
+            "isMulti": false
+        },
+        {
+            "id": 37,
+            "name": "Thunder",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "thunder",
+            "isMulti": false
+        },
+        {
+            "id": 38,
+            "name": "Poison",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "poison",
+            "isMulti": false
+        },
+        {
+            "id": 39,
+            "name": "Cold",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "cold",
+            "isMulti": false
+        },
+        {
+            "id": 40,
+            "name": "Radiant",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "radiant",
+            "isMulti": false
+        },
+        {
+            "id": 41,
+            "name": "Fire",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "fire",
+            "isMulti": false
+        },
+        {
+            "id": 42,
+            "name": "Necrotic",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "necrotic",
+            "isMulti": false
+        },
+        {
+            "id": 43,
+            "name": "Acid",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "acid",
+            "isMulti": false
+        },
+        {
+            "id": 44,
+            "name": "Psychic",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "psychic",
+            "isMulti": false
+        },
+        {
+            "id": 45,
+            "name": "Piercing from Magic Weapons Wielded by Good Creatures",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "piercing-from-magic-weapons-wielded-by-good",
+            "isMulti": true
+        },
+        {
+            "id": 46,
+            "name": "Bludgeoning, Piercing, and Slashing from Magic Weapons",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "bludgeoning-piercing-and-slashing-from-magic-weapons",
+            "isMulti": true
+        },
+        {
+            "id": 47,
+            "name": "Force",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "force",
+            "isMulti": false
+        },
+        {
+            "id": 48,
+            "name": "Force",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "force",
+            "isMulti": false
+        },
+        {
+            "id": 49,
+            "name": "Force",
+            "type": 3,
+            "displayOrder": 0,
+            "slug": "force",
+            "isMulti": false
+        },
+        {
+            "id": 50,
+            "name": "Bludgeoning, Piercing, and Slashing from Nonmagical Attacks while in Dim Light or Darkness",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "bludgeoning-piercing-and-slashing-from-nonmagical-attacks-while-in-dim-light-or-darkness",
+            "isMulti": true
+        },
+        {
+            "id": 51,
+            "name": "Ranged Attacks",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "ranged-attacks",
+            "isMulti": false
+        },
+        {
+            "id": 52,
+            "name": "Damage Dealt By Traps",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "damage-dealt-by-traps",
+            "isMulti": false
+        },
+        {
+            "id": 53,
+            "name": "All",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "all",
+            "isMulti": true
+        },
+        {
+            "id": 54,
+            "name": "Bludgeoning from non magical attacks",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "bludgeoning-from-non-magical-attacks",
+            "isMulti": false
+        },
+        {
+            "id": 55,
+            "name": "Bludgeoning, Piercing, and Slashing from Metal Weapons",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "slashing-from-metal-weapons",
+            "isMulti": true
+        },
+        {
+            "id": 56,
+            "name": "Bludgeoning, Piercing, and Slashing while in Dim Light or Darkness",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "bludgeoning-piercing-and-slashing-while-in-dim-or-light-darkness",
+            "isMulti": true
+        },
+        {
+            "id": 57,
+            "name": "Damage from Spells",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "damage-from-spells",
+            "isMulti": false
+        },
+        {
+            "id": 60,
+            "name": "Bludgeoning, Piercing, and Slashing from Nonmagical Attacks that aren't Adamantine or Silvered",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "bludgeoning-piercing-and-slashing-from-nonmagical-attacks-that-arent-adamantine-or-silvered",
+            "isMulti": true
+        },
+        {
+            "id": 61,
+            "name": "Nonmagical Bludgeoning, Piercing, and Slashing (from Stoneskin)",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "nonmagical-bludgeoning-piercing-and-slashing-from-stoneskin",
+            "isMulti": true
+        },
+        {
+            "id": 62,
+            "name": "All damage but Force, Radiant, and Psychic",
+            "type": 1,
+            "displayOrder": 0,
+            "slug": "all-damage-but-force-radiant-and-psychic",
+            "isMulti": true
+        },
+        {
+            "id": 63,
+            "name": "Petrified (Aberrant Armor Only)",
+            "type": 2,
+            "displayOrder": 0,
+            "slug": "petrified-aberrant-armor-only",
+            "isMulti": false
+        }
+    ],
 };
 
 //
@@ -414,20 +1122,31 @@ function getArmor(c_json, c, modifiers) {
         }
     });
 
+    // Remove dex bonus- this goes along with natural armor
+    filterModifiers(modifiers, undefined, "ignore", "unarmored-dex-ac-bonus").forEach(mod => {
+        if (mod.value < armor.dexModifer) {
+            armor.dexModifer = 0;
+        }
+    });
+
     // If they have 'Unarmored Defense', add con mod
     filterModifiers(modifiers, undefined, "set", "unarmored-armor-class").forEach(mod => {
         // This covers barabarian and monk 'Unarmored Defense', adding con or wis
+        // console.dir(mod);
+        let new_unarmoredModifier = 0;
         if (mod.detail.statId != null) {
             let stat_key = ruleStatForID(mod.detail.statId).key.toLowerCase();
-            if (armor.unarmoredModifier < c.stats[stat_key].modifier) {
-                armor.unarmoredModifier = c.stats[stat_key].modifier;
-            }
+            new_unarmoredModifier = c.stats[stat_key].modifier;
+            // if (armor.unarmoredModifier < c.stats[stat_key].modifier) {
+            //     armor.unarmoredModifier = c.stats[stat_key].modifier;
+            // }
         }
         // This works with natural armor (tested on Tortle), but need to remove dex bonus - above
         if (mod.detail.fixedValue != null) {
-            if (armor.unarmoredModifier < mod.detail.fixedValue) {
-                armor.unarmoredModifier = mod.detail.fixedValue;
-            }
+            new_unarmoredModifier += mod.detail.fixedValue;
+        }
+        if (armor.unarmoredModifier < new_unarmoredModifier) {
+            armor.unarmoredModifier = new_unarmoredModifier;
         }
     });
 
@@ -438,11 +1157,11 @@ function getArmor(c_json, c, modifiers) {
                 if (item.definition.armorTypeId == 4) { // shield
                     armor.shieldModifier = item.definition.armorClass;
                 } else {
-                    if(item.definition.armorTypeId == 3){
-                         // heavy armor doesn't use a dex bonus
+                    if (item.definition.armorTypeId == 3) {
+                        // heavy armor doesn't use a dex bonus
                         armor.dexModifer = 0
                     }
-                    if(item.definition.stealthCheck == 2){
+                    if (item.definition.stealthCheck == 2) {
                         armor.stealthAdjustment = "Disadvantage";
                     }
                     if (armor.baseArmorClass < item.definition.armorClass) {
@@ -452,8 +1171,27 @@ function getArmor(c_json, c, modifiers) {
             }
         }
     });
+    // console.log("armor.baseArmorClass:", armor.baseArmorClass);
+    // console.log("armor.dexModifer:", armor.dexModifer);
+    // console.log("armor.unarmoredModifier:", armor.unarmoredModifier);
+    // console.log("armor.shieldModifier:", armor.shieldModifier);
     armor.finalArmorClass = armor.baseArmorClass + armor.dexModifer + armor.unarmoredModifier + armor.shieldModifier;
     return armor;
+}
+
+function isItemActive(c_json, item_id) {
+    let active = false;
+    // console.log("looking for item:", item_id);
+    c_json.inventory.forEach(item => {
+        if (item.definition.id == item_id) {
+            // console.log("found:", item.definition.name);
+            if ((item.definition.canEquip == item.equipped) && (item.definition.canAttune == item.isAttuned)) {
+                active = true;
+            }
+            // console.log("  active:", active);
+        }
+    });
+    return active;
 }
 
 function getModifiers(c_json) {
@@ -461,14 +1199,18 @@ function getModifiers(c_json) {
     Object.keys(c_json.modifiers).forEach((mod_source) => {
         let mod_array = c_json.modifiers[mod_source];
         mod_array.forEach((mod, source) => {
-            modifiers.push({
-                source: mod_source,
-                type: mod.type,
-                subType: mod.subType,
-                value: mod.value,
-                detail: mod,
-            });
-            console.log("mod:", mod_source, mod.type, mod.subType, mod.value);
+            if ((mod_source != "item") || isItemActive(c_json, mod.componentId)) {
+                console.log("mod:", mod_source, mod.type, mod.subType, mod.value);
+                modifiers.push({
+                    source: mod_source,
+                    type: mod.type,
+                    subType: mod.subType,
+                    value: mod.value,
+                    detail: mod,
+                });
+            } else {
+                // console.log("  skipped mod:", mod_source, mod.type, mod.subType, mod.value);
+            }
         });
     });
     return modifiers;
@@ -490,6 +1232,7 @@ function getSpells(c_json) {
     });
     return spells;
 }
+
 function calculateStat(c_json, c, modifiers, stat_score_name, stat_value) {
     stat_score_name = stat_score_name.toLowerCase();
     let set_value = null;
@@ -505,14 +1248,17 @@ function calculateStat(c_json, c, modifiers, stat_score_name, stat_value) {
                     bonus += mod.value;
                     break;
                 case "half-proficiency":
-                    bonus += Math.floor(c.levelProficiencyBonus / 2);
-                    break;
                 case "proficiency":
-                    bonus += c.levelProficiencyBonus;
-                    break;
                 case "expertise":
-                    bonus += c.levelProficiencyBonus * 2;
+                    bonus = levelProficiencyBonuses(c.characterLevel, mod.type)
+                    // bonus += Math.floor(c.levelProficiencyBonus / 2);
                     break;
+                // case "proficiency":
+                //     bonus += c.levelProficiencyBonus;
+                //     break;
+                // case "expertise":
+                //     bonus += c.levelProficiencyBonus * 2;
+                //     break;
             }
         }
     });
@@ -541,57 +1287,168 @@ function statModifer(stat_value) {
     return stat_modifer.modifier;
 }
 
-function levelProficiencyBonuses(level) {
+function levelProficiencyBonuses(characterLevel, proficiencyLevel) {
     let profBonus = rules.levelProficiencyBonuses.find(r_statProf => {
-        if (level == r_statProf.level) {
+        if (characterLevel == r_statProf.level) {
             return true;
         }
     });
-    return profBonus.bonus;
+    let bonus = profBonus.bonus;
+    switch (proficiencyLevel) {
+        case "half-proficiency":
+            bonus = Math.floor(bonus / 2);
+            break;
+        case "expertise":
+            bonus = bonus * 2;
+            break;
+    }
+
+    return bonus;
 }
 
 function getSkills(c_json, c, modifiers) {
-    // skills[skill_name.toLowerCase()] = {
-    //     name: skill_name,
-    //     stat: obj.find(".ct-skills__col--stat").text().toLowerCase(),
-    //     modifier: obj.find(".ct-skills__col--modifier").text(),
-    //     adjustment: adjustment || "",
-    // }
     skills = {};
     let jackOfAllTrades = filterModifiers(modifiers, undefined, "half-proficiency", "ability-checks").length >= 1;
     rules.abilitySkills.forEach(r_skill => {
         let r_stat = ruleStatForID(r_skill.stat);
-        let skill_name = r_skill.name.toLowerCase().replace(/ /g, "-");
-        let skill_stat = r_stat.key.toLowerCase();
-        let skill_modifier = c.stats[skill_stat].modifier;
-        let skill_adjustment = "";
-        // console.dir(filterModifiers(modifiers, undefined, "proficiency", skill_modifier));
-        if (filterModifiers(modifiers, undefined, "expertise", skill_name).length) {
-            skill_modifier += c.levelProficiencyBonus * 2;
-        } else if (filterModifiers(modifiers, undefined, "proficiency", skill_name).length) {
-            skill_modifier += c.levelProficiencyBonus;
-        } else if (filterModifiers(modifiers, undefined, "half-proficiency", skill_name).length || jackOfAllTrades) {
-            skill_modifier += Math.floor(c.levelProficiencyBonus / 2);
-        }
-        if(skill_name == "stealth"){
-            skill_adjustment = c.armor.stealthAdjustment;
-        }
-        skills[r_skill.name.toLowerCase()] = {
+        let skill_subType = r_skill.name.toLowerCase().replace(/ /g, "-")
+        let skill = {
             name: r_skill.name,
-            stat: skill_stat,
-            modifier: skill_modifier,
-            adjustment: skill_adjustment,  // advantage|disadvantage|"",
+            stat: r_stat.key.toLowerCase(),
+            modifier: c.stats[r_stat.key.toLowerCase()].modifier,
+            adjustment: "",
+            restriction: ""
         };
+        ["expertise", "proficiency", "half-proficiency"].every(skillType => {
+            if (
+                ((skillType == "half-proficiency") && jackOfAllTrades) ||
+                filterModifiers(modifiers, undefined, skillType, skill_subType).length
+            ) {
+                console.log("prof:", skillType, skill_subType, levelProficiencyBonuses(c.characterLevel, skillType));
+                skill.modifier += levelProficiencyBonuses(c.characterLevel, skillType);
+                return false;
+            }
+            return true;
+        });
+        if (skill_subType == "stealth") {
+            skill.adjustment = c.armor.stealthAdjustment;
+        }
+        filterModifiers(modifiers, undefined, "bonus", skill_subType).forEach(mod => {
+            // console.log("adding: ", skill_name, mod);
+            skill.modifier += mod.value;
+        });
+        filterModifiers(modifiers, undefined, "advantage|disadvantage", skill_subType).forEach(mod => {
+            console.log("skill:", mod.source, mod.type, mod.subType, mod.value);
+            skill.adjustment = mod.type;
+            if (mod.detail.restriction) {
+                skill.restriction = mod.detail.restriction;
+            }
+        });
+        filterModifiers(modifiers, undefined, "bonus", "ability-checks").forEach(mod => {
+            // console.log("adding: ability-checks", mod);
+            skill.modifier += mod.value;
+        });
+        skills[r_skill.name.toLowerCase()] = skill;
     });
     return Object.fromEntries(Object.entries(skills).sort())
 }
 
+function getSaves(c_json, c, modifiers) {
+    saves = {};
+    Object.values(c.stats).forEach(stat => {
+        let save_subType = stat.name.toLowerCase() + "-saving-throws";
+        let save = {
+            key: stat.key,
+            name: stat.name,
+            modifier: stat.modifier,
+            adjustment: "",
+            restriction: ""
+        };
+
+        ["expertise", "proficiency", "half-proficiency"].every(saveType => {
+            if (
+                filterModifiers(modifiers, undefined, saveType, save_subType).length
+            ) {
+                console.log("prof:", saveType, save_subType, levelProficiencyBonuses(c.characterLevel, saveType));
+                save.modifier += levelProficiencyBonuses(c.characterLevel, saveType);
+                return false;
+            }
+            return true;
+        });
+        filterModifiers(modifiers, undefined, "bonus", "saving-throws").forEach(mod => {
+            save.modifier += mod.value;
+        });
+        filterModifiers(modifiers, undefined, "advantage|disadvantage", `^saving-throws|^${save_subType}`).forEach(mod => {
+            // console.log("save:", mod.source, mod.type, mod.subType, mod.value);
+            save.adjustment = mod.type;
+            if (mod.detail.restriction) {
+                save.restriction = mod.detail.restriction;
+            }
+        });
+        saves[stat.key] = save;
+        // console.dir(save, {breakLength: 160});
+    });
+    return saves;
+}
+
+function getDefenses(c_json, character, modifiers) {
+    let defenses = {
+        "resistance": [],
+        "immunity": [],
+        "vulnerability": [],
+    }
+    for (let defenseType in defenses) {
+        filterModifiers(modifiers, undefined, defenseType).forEach(mod => {
+            // console.dir(mod, { breakLength: 120 });
+            defenses[defenseType].push(mod.detail.friendlySubtypeName);
+        });
+    };
+
+    c_json.customDefenseAdjustments.forEach(adjustment => {
+        // console.log(adjustment.adjustmentId)
+        let damage = rules.damageAdjustments.find((damageRule) => {
+            if (damageRule.id == adjustment.adjustmentId) {
+                return true;
+            }
+        });
+        // console.log(damage);
+        switch (damage.type) {
+            case 1:
+                defenses.resistance.push(damage.name + "*");
+                break;
+            case 2:
+                defenses.immunity.push(damage.name + "*");
+                break;
+            case 3:
+                defenses.vulnerability.push(damage.name + "*");
+                break;
+        }
+    });
+    for (let defenseType in defenses) {
+        defenses[defenseType].sort();
+    };
+
+    return defenses;
+}
+
 function filterModifiers(modifiers, modifier_source, modifier_type, modifier_subtype) {
+    let source_regex = /.*/;
+    if (typeof (modifier_source) != "RegExp") {
+        source_regex = new RegExp(modifier_source)
+    }
+    let type_regex = /.*/;
+    if (typeof (modifier_type) != "RegExp") {
+        type_regex = new RegExp(modifier_type)
+    }
+    let subtype_regex = /.*/;
+    if (typeof (modifier_subtype) != "RegExp") {
+        subtype_regex = new RegExp(modifier_subtype)
+    }
     let filtered = modifiers.filter(modifier => {
         if (
-            (((modifier_source == undefined) || (modifier_source == modifier.source))) &&
-            (((modifier_type == undefined) || (modifier_type == modifier.type))) &&
-            (((modifier_subtype == undefined) || (modifier_subtype == modifier.subType)))
+            source_regex.test(modifier.source) &&
+            type_regex.test(modifier.type) &&
+            subtype_regex.test(modifier.subType)
         ) {
             return true;
         }
@@ -599,11 +1456,18 @@ function filterModifiers(modifiers, modifier_source, modifier_type, modifier_sub
     return filtered;
 }
 
-function modifierSubtypes(modifier_type, modifiers) {
+function modifierSubtypes(modifier_type, modifiers, friendly) {
+    let subTypeKey = "subType";
+    if (friendly === true) {
+        subTypeKey = "friendlySubtypeName";
+    }
     let subTypes = new Set()
     modifiers.forEach(mod => {
         if (mod.type == modifier_type) {
-            subTypes.add(mod.subType);
+            let subType = mod.detail[subTypeKey].toLowerCase();
+            if (subType != "choose a language") {
+                subTypes.add(subType);
+            };
         }
     });
     return Array.from(subTypes);
@@ -619,15 +1483,15 @@ function ruleStatForID(stat_id) {
 }
 
 function parseCharacter(c_json) {
-    console.log(`\n#### Parsing ${c_json.name} ####`);
+    // console.log(`\n#### Parsing ${c_json.name.padEnd(20)} https://www.dndbeyond.com/profile/${c_json.userId}/characters/${c_json.id} ####`);
     let character = {
         id: c_json.id,
         userId: c_json.userId,
         readonlyUrl: c_json.readonlyUrl,
         name: c_json.name,
-        level: null, // TODO:
-        race: null, // TODO:
-        class: null, // TODO:
+        level: characterLevel(c_json),
+        race: c_json.race.fullName,
+        class: "",
         url: `https://www.dndbeyond.com/profile/${c_json.userId}/characters/${c_json.id}`, // full r/w URL
         avatarUrl: "https://www.dndbeyond.com/Content/Skins/Waterdeep/images/characters/default-avatar-builder.png",
         lastUpdate: Date.now(),
@@ -642,6 +1506,13 @@ function parseCharacter(c_json) {
         }
     }
 
+    // TODO: untested with multiclass, may need to sort?
+    c_json.classes.forEach(c_class => {
+        if (character.class.length) {
+            character.class += " / ";
+        }
+        character.class += `${c_class.definition.name} ${c_class.level}`
+    });
 
     // Array of modifiers from race/class/items/etc
     let modifiers = getModifiers(c_json);
@@ -661,9 +1532,27 @@ function parseCharacter(c_json) {
         };
     });
 
+    // Saves
+    character.saves = getSaves(c_json, character, modifiers);
+
+    // Defenses
+    character.defenses = getDefenses(c_json, character, modifiers);
+
+    // Conditions
+    character.conditions = [];
+    Object.values(c_json.conditions).forEach(c_condition => {
+        let condition = rules.conditions.find((r_condition) => {
+            if (r_condition.definition.id == c_condition.id) {
+                return true;
+            }
+        });
+        character.conditions.push(condition.definition.name);
+    });
+    character.conditions.sort();
+
     // HP, I'm currently ignoring overrideHitPoints
     let hp_per_level = character.stats["con"].modifier;
-    filterModifiers(modifiers, undefined, undefined, "hit-points-per-level").forEach(mod =>{
+    filterModifiers(modifiers, undefined, undefined, "hit-points-per-level").forEach(mod => {
         hp_per_level += mod.value;
     });
     let max_hp = c_json.baseHitPoints + (hp_per_level * character.characterLevel);
@@ -684,11 +1573,14 @@ function parseCharacter(c_json) {
         ac: calculateStat(c_json, character, modifiers, "armor-class", base_ac),
         initiative: calculateStat(c_json, character, modifiers, "initiative", (character.stats["dex"].modifier)),
         speed: walk_speed + movement_bonus,
-        languages: modifierSubtypes("language", modifiers).sort(),
+        languages: modifierSubtypes("language", modifiers, true).sort(),
     }
-
     character.skills = getSkills(c_json, character, modifiers);
-    // console.dir(character, { breakLength: 120 });
+    character.passives = {
+        perception: 10 + character.skills.perception.modifier,
+        investigation: 10 + character.skills.investigation.modifier,
+        insight: 10 + character.skills.insight.modifier,
+    }
     return character;
 }
 
@@ -708,6 +1600,11 @@ function deep_compare(a, b) {
         if (a === b) {
             return;
         }
+        if ((typeof (a) == "string") && ((typeof (b) == "string"))) {
+            if (a.toLowerCase() == b.toLowerCase()) {
+                return;
+            }
+        }
         if ((a instanceof Object) && (b instanceof Object)) {
             if (a.constructor !== b.constructor) {
                 log('Entities do not have same constructors', path);
@@ -715,6 +1612,9 @@ function deep_compare(a, b) {
             }
 
             for (const key in a) {
+                if (key == "restriction") {
+                    return
+                }
                 if (a.hasOwnProperty(key)) {
                     if (!b.hasOwnProperty(key)) {
                         log('Property "' + key + '" does not exist in first entity', path);
@@ -724,6 +1624,9 @@ function deep_compare(a, b) {
                 }
             }
             for (const key in b) {
+                if (key == "restriction") {
+                    return
+                }
                 if (b.hasOwnProperty(key) && !a.hasOwnProperty(key)) {
                     log('Property "' + key + '" does not exist in second entity', path);
                 }
@@ -743,25 +1646,43 @@ function compareCharacterJSON(c_dom, c_api) {
     let characterProperties = [
         "avatarUrl",
         // "characterLevel",
-        // "class",
+        "class",
         "id",
-        // "race",
+        "race",
         // "url",  // These will be different, but working. Built from the API it will have userid, DOM will have username
         "core",
         "stats",
         "skills",
         "health",
-        // "conditions",
-        // "defenses",
-        // "saves",
-        // "passives"
+        "conditions",
+        "defenses",
+        "saves",
+        "passives"
     ];
     characterProperties.forEach(property_name => {
+        if (property_name == "passives") {
+            // patch to match the current dom scrape
+            c_dom.passives.perception = parseInt(c_dom.passives.perception);
+            c_dom.passives.investigation = parseInt(c_dom.passives.investigation);
+            c_dom.passives.insight = parseInt(c_dom.passives.insight);
+            delete c_dom.passives.senses;
+        }
+        if (property_name == "saves") {
+            Object.values(c_dom.saves).forEach(dom_save => {
+                dom_save.key = dom_save.name;
+                dom_save.name = c_api.stats[dom_save.key].name;
+                dom_save.adjustment = c_api.saves[dom_save.key].adjustment
+                dom_save.restriction = c_api.saves[dom_save.key].restriction;
+            });
+        }
+
         let diff = deep_compare(c_dom[property_name], c_api[property_name]);
         if (diff.length) {
             equal_flag = false;
-            console.log(`c_dom[${property_name}]:`, c_dom[property_name]);
-            console.log(`c_api[${property_name}]:`, c_api[property_name]);
+            console.log(`c_dom[${property_name}]: `,
+                util.inspect(c_dom[property_name], { breakLength: 120, colors: true }));
+            console.log(`c_api[${property_name}]: `,
+                util.inspect(c_api[property_name], { breakLength: 120, colors: true }));
             console.log(`${property_name}:`, diff);
         }
     });

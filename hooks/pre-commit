@@ -30,12 +30,12 @@ try {
     fs.writeFileSync("src/manifest.json", JSON.stringify(data, null, 2) + "\n");
 
     // Add it to the update-manifest.json
-    data = JSON.parse(fs.readFileSync("update-manifest.json", 'utf8'))
-    data.addons['{1aaceb45-b1f8-40a4-8001-4264120e9885}'].updates.push({
-        "version": new_version,
-        "update_link": `https://github.com/scott-t-wilson/BeyondCampaigns/releases/download/builds-${new_version}/beyond_campaigns-${new_version}.xpi`
-    });
-    fs.writeFileSync("update-manifest.json", JSON.stringify(data, null, 2) + "\n");
+    // data = JSON.parse(fs.readFileSync("update-manifest.json", 'utf8'))
+    // data.addons['{1aaceb45-b1f8-40a4-8001-4264120e9885}'].updates.push({
+    //     "version": new_version,
+    //     "update_link": `https://github.com/scott-t-wilson/BeyondCampaigns/releases/download/builds-${new_version}/beyond_campaigns-${new_version}.xpi`
+    // });
+    // fs.writeFileSync("update-manifest.json", JSON.stringify(data, null, 2) + "\n");
 
 
     // Add the changes to commit

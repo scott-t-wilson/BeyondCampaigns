@@ -177,11 +177,10 @@ function parse_dom() {
     character.conditions = conditions;
     console.log("character.conditions:", character.conditions);
 
-    character.passives = {  // TODO: add to json parser
-        perception: $("div.ct-senses__callout-label:contains('Passive WIS (Perception)')").prev().text(),
-        investigation: $("div.ct-senses__callout-label:contains('Passive INT (Investigation')").prev().text(),
-        insight: $("div.ct-senses__callout-label:contains('Passive WIS (Insight)')").prev().text(),
-        senses: $("ct-senses__summary").text(),
+    character.passives = {
+        perception: parseInt($("div.ct-senses__callout-label:contains('Passive WIS (Perception)')").prev().text()),
+        investigation: parseInt($("div.ct-senses__callout-label:contains('Passive INT (Investigation')").prev().text()),
+        insight: parseInt($("div.ct-senses__callout-label:contains('Passive WIS (Insight)')").prev().text()),
     };
     console.log("character.conditions:", character.conditions);
 
