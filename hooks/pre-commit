@@ -6,7 +6,7 @@ const execSync = require('child_process').execSync
 try {
     // if version file was manually edited don't touch anything
     let version_status = execSync('git status version.txt -s');
-    if(version_status.length > 0){
+    if (version_status.length > 0) {
         console.log("version.txt has been modified, do not update.")
         return;
     }
@@ -29,8 +29,17 @@ try {
     data.version = new_version;
     fs.writeFileSync("src/manifest.json", JSON.stringify(data, null, 2) + "\n");
 
+    // Add it to the update-manifest.json
+    data = JSON.parse(fs.readFileSync("update-manifest.json", 'utf8'))
+    data.addons['{1aaceb45-b1f8-40a4-8001-4264120e9885}'].updates.push({
+        "version": new_version,
+        "update_link": `https://github.com/scott-t-wilson/BeyondCampaigns/releases/download/builds-${new_version}/beyond_campaigns-${new_version}.xpi`
+    });
+    fs.writeFileSync("update-manifest.json", JSON.stringify(data, null, 2) + "\n");
+
+
     // Add the changes to commit
-    execSync('git add version.txt package.json src/manifest.json');
+    execSync('git add version.txt package.json update-manifest.json src/manifest.json');
 
 } catch (err) {
     console.error(err)

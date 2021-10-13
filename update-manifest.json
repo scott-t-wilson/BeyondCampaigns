@@ -9,6 +9,10 @@
         {
           "version": "0.0.23",
           "update_link": "https://github.com/scott-t-wilson/BeyondCampaigns/releases/download/builds-0.0.23/beyond_campaigns-0.0.23.xpi"
+        },
+        {
+          "version": "0.0.24",
+          "update_link": "https://github.com/scott-t-wilson/BeyondCampaigns/releases/download/builds-0.0.24/beyond_campaigns-0.0.24.xpi"
         }
       ]
     }
