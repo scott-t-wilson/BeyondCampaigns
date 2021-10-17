@@ -39,6 +39,7 @@ jobs:
         tag=builds-$(cat version.txt)
         echo "::set-output name=version::$version"
         echo "::set-output name=tag::$tag"
+        ls -l web-ext-artifacts
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.4
