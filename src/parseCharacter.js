@@ -1,4 +1,4 @@
-const util = require('util');
+// const util = require('util');
 
 const rules = {
     "stats": [
@@ -1679,10 +1679,10 @@ function compareCharacterJSON(c_dom, c_api) {
         let diff = deep_compare(c_dom[property_name], c_api[property_name]);
         if (diff.length) {
             equal_flag = false;
-            console.log(`c_dom[${property_name}]: `,
-                util.inspect(c_dom[property_name], { breakLength: 120, colors: true }));
-            console.log(`c_api[${property_name}]: `,
-                util.inspect(c_api[property_name], { breakLength: 120, colors: true }));
+            // console.log(`c_dom[${property_name}]: `,
+            //     util.inspect(c_dom[property_name], { breakLength: 120, colors: true }));
+            // console.log(`c_api[${property_name}]: `,
+            //     util.inspect(c_api[property_name], { breakLength: 120, colors: true }));
             console.log(`${property_name}:`, diff);
         }
     });

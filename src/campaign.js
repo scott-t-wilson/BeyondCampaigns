@@ -1,4 +1,5 @@
 import { waitForKeyElements, register_url, register_fetch, gamelog, globals, merge } from "./init.js";
+import { parseCharacter } from "./parseCharacter.js";
 import { BCRollLogger } from "./bcRollRenderer"
 import { Sifrr } from '@sifrr/storage';
 import marked from 'marked';
@@ -197,9 +198,17 @@ class Monster {
                 //     contextName: this.name,         // Kenku | Phil
                 //     contextAvatarUrl: this.avatarUrl
                 // });
-        
+
                 this.state = "complete";
             });
+    }
+}
+
+function modToString(mod) {
+    if (mod >= 0) {
+        return "+" + mod;
+    } else {
+        return mod.toString();
     }
 }
 
@@ -219,52 +228,30 @@ export class Character {
             contextName: this.name,         // Kenku | Phil
             contextAvatarUrl: this.avatarUrl
         });
-        // this.url = `https://www.dndbeyond.com/profile/${this.userName}/characters/${this.id}`;
+        let api_url = `https://character-service.dndbeyond.com/character/v5/character/${this.id}`;
         gCharacters.push(this);
-        db.characters.get(this.id.toString()).then(db_response => {
-            this.db_character = db_response[this.id];
-            console.log("db_character loaded:", this.db_character);
-            if (this.db_character) {
-                this.state = "complete";
-                this.update_dom();
-            } else {
-                console.log("no db character, fetching iframe:", this.id);
-                this.fetch_iframe();
-            }
-        })
+        this.api_character = this.fetch_api();
     }
 
-    fetch_iframe() {
-        if (this.state == "complete" && this.db_character != undefined) {
-            this.update_dom();
-            return;
-        }
-        this.state = "fetching";
-        console.log(`Character.fetch(${this.id}):`);
-        var iframe = $(`<iframe class='bc-character-iframe-wrapper' src='${this.url}'></iframe>`);
-        waitForKeyElements("#bc-wrapper", (wrapper) => {
-            console.log(`Character.fetch(${this.id}): wrapper`, wrapper);
-            $("#bc-wrapper").prepend(iframe);
-            iframe.data("bc-character-id", this.id);
-            console.log(`Character.fetch(${this.id}): iframe:`, iframe);
-            waitForKeyElements(
-                () => {
-                    db.characters.get(this.id.toString()).then(res => {
-                        this.db_character = res[this.id];
-                    });
-                    console.log(`Character.fetch(${this.id}): waiting for db:`, this);
-                    return this.db_character != undefined;
-                },
-                () => {
-                    console.log(`Character.fetch(${this.id}): DB response saved, nuking iframe`, this.db_character);
-                    this.state = "complete";
-                    this.update_dom();
-                    iframe.remove();
-                }, {
-                interval: 2000,
-                maxIntervals: 30,
+    fetch_api() {
+        console.log("starting fetch_api");
+        fetch(
+            `https://character-service.dndbeyond.com/character/v5/character/${this.id}`, {
+            method: "GET",
+            cache: "no-cache",
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + globals.cobalt_token
+            }
+        })
+            .then(response => response.json())
+            .then(json => {
+                console.log("character-service.dndbeyond.com");
+                this.api_character = parseCharacter(json.data);
+                this.state = "complete";
+                this.update_dom();
+
             });
-        }, { foundAttr: `wfke-character-${this.id}` });
     }
 
     set_dom_basics() {
@@ -280,29 +267,29 @@ export class Character {
         console.log(`update_dom ${this.id}`);
         waitForKeyElements(this.selector, t => {
             if (this.state == "complete") {
-                t.find(".bc-pc-race").text(this.db_character.race);
-                t.find(".bc-pc-level").text(this.db_character.level);
-                t.find(".bc-pc-class").text(this.db_character.class);
-                t.find(".bc-pc-hp-current").text(this.db_character.health.hp_current);
-                t.find(".bc-pc-hp-max").text(this.db_character.health.hp_max);
-                t.find(".bc-pc-hp-temp").text(this.db_character.health.hp_temp);
-                t.find(".bc-pc-main-stat-value-passive[stat='ac']").text(this.db_character.core.ac);
-                t.find(".bc-pc-main-stat-value[stat='initiative']").text(this.db_character.core.initiative);
-                t.find(".bc-pc-main-stat-value-passive[stat='speed']").text(this.db_character.core.speed);
-                t.find(".bc-pc-language-value").text(this.db_character.core.languages);
+                t.find(".bc-pc-race").text(this.api_character.race);
+                t.find(".bc-pc-level").text(this.api_character.level);
+                t.find(".bc-pc-class").text(this.api_character.class);
+                t.find(".bc-pc-hp-current").text(this.api_character.health.hp_current);
+                t.find(".bc-pc-hp-max").text(this.api_character.health.hp_max);
+                t.find(".bc-pc-hp-temp").text(this.api_character.health.hp_temp);
+                t.find(".bc-pc-main-stat-value-passive[stat='ac']").text(this.api_character.core.ac);
+                t.find(".bc-pc-main-stat-value[stat='initiative']").text(this.api_character.core.initiative);
+                t.find(".bc-pc-main-stat-value-passive[stat='speed']").text(this.api_character.core.speed);
+                t.find(".bc-pc-language-value").text(this.api_character.core.languages);
                 t.find(".bc-pc-skill-value-passive").each((i, el) => {
-                    $(el).text(this.db_character.passives[$(el).attr("skill")]);
+                    $(el).text(this.api_character.passives[$(el).attr("skill")]);
                 });
                 t.find(".bc-pc-stat-modifier").each((i, el) => {
-                    let stat = this.db_character.stats[$(el).attr("stat")]
+                    let stat = this.api_character.stats[$(el).attr("stat")]
                     if (stat) {
-                        $(el).text(stat.modifier);
+                        $(el).text(modToString(stat.modifier));
                     }
                 });
                 t.find(".bc-pc-skill-modifier").each((i, el) => {
-                    let skill = this.db_character.skills[$(el).attr("skill")]
+                    let skill = this.api_character.skills[$(el).attr("skill")]
                     if (skill) {
-                        $(el).text(skill.modifier);
+                        $(el).text(modToString(skill.modifier));
                     }
                 });
             }
@@ -344,7 +331,7 @@ export class Character {
         $(roll_menu).find("li[bc-roll-kind=advantage] > .bc-icon-check").hide();
         $(roll_menu).find("li[bc-roll-kind=disadvantage] > .bc-icon-check").hide();
         if (skill_key) {
-            let skill = this.db_character.skills[skill_key];
+            let skill = this.api_character.skills[skill_key];
             $(roll_menu).find("li[bc-roll-type]").remove();
             $(roll_menu).find(".bc-roll-popup-heading").text(skill.name);
             let skill_item = $(`
@@ -356,23 +343,28 @@ export class Character {
             $(roll_menu).find("ul.bc-roll-type").append(skill_item);
         }
         if (stat) {
-            $(roll_menu).find(".bc-roll-popup-heading").text(this.db_character.stats[stat].full_name);
+            $(roll_menu).find(".bc-roll-popup-heading").text(this.api_character.stats[stat].name);
             $(roll_menu).find("li[bc-roll-type] > .bc-icon-check").hide();
             $(roll_menu).find("li[bc-roll-type=check] > .bc-icon-check").show();
 
             $(roll_menu).find("li[bc-roll-type=check] > .bc-roll-popup-mod").text(
-                this.db_character.stats[stat].modifier
+                modToString(this.api_character.stats[stat].modifier)
             );
             $(roll_menu).find("li").attr("bc-roll-action", stat);
             $(roll_menu).find("li[bc-roll-type=save] > .bc-roll-popup-mod").text(
-                this.db_character.saves[stat].modifier
+                modToString(this.api_character.saves[stat].modifier)
             );
+            console.log($(roll_menu).find("li[bc-roll-type=save] > .bc-icon-inline"));
+            console.log("save adj:", this.api_character.saves[stat]);
+            $(roll_menu).find("li[bc-roll-type=save] > .bc-icon-inline").attr(
+                "adjustment", this.api_character.saves[stat].adjustment
+            ).text(this.api_character.saves[stat].restriction);
 
-            Object.values(this.db_character.skills).forEach(skill => {
+            Object.values(this.api_character.skills).forEach(skill => {
                 if (skill.stat == stat) {
                     let skill_item = $(`
                     <li class="bc-roll-popup" bc-roll-type="check" bc-roll-action="${skill.name}">
-                        <div class="bc-roll-popup-mod">${skill.modifier}</div>
+                        <div class="bc-roll-popup-mod">${modToString(skill.modifier)}</div>
                         <div>${skill.name}</div>
                         <div class="bc-icon-inline" adjustment="${skill.adjustment}"></div>
                         <div class="bc-icon-check"></div>
@@ -761,7 +753,7 @@ function start_beyond_campaign() {
                         "content": `<div class="bc-character" character-id="${character.id}">${pc_template}</div>`,
                     });
                 }
-                character.fetch_iframe(); // this should be safe to call twice, wfke will mark the elements and only run once
+                // character.fetch_iframe(); // this should be safe to call twice, wfke will mark the elements and only run once
             });
         });
         // gCharacters.forEach(character => {
@@ -886,7 +878,7 @@ function load_grid_contents(layout) {
     })
 }
 
-var pc_template = `
+export var pc_template = `
 <div class="bc-pc-main-wrapper">
     <div class="bc-pc-avatar">
         <a class="bc-pc-avatar" href="http://example.com" target="_blank">
@@ -1023,6 +1015,7 @@ export var roll_template_html = `
         <li class="bc-roll-popup" bc-roll-type="save">
             <div class="bc-roll-popup-mod">-</div>
             <div class="bc-roll-popup-type">Save</div>
+            <div class="bc-icon-inline" adjustment=""></div>
             <div class="bc-icon-check"></div>
         </li>
     </ul>

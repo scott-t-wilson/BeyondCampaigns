@@ -25,6 +25,24 @@ function downloadJsonFile(data, filename) {
     a.remove();
 }
 
+function fetchCharacter(characterId){
+    fetch(
+        `https://character-service.dndbeyond.com/character/v5/character/${characterId}`, {
+        method: "GET",
+        cache: "no-cache",
+        credentials: "include",
+        headers: {
+            "Authorization": "Bearer " + globals.cobalt_token
+        }
+    })
+        .then(response => response.json())
+        .then(json => {
+            console.log("character-service.dndbeyond.com");
+            debug_data["character_json"] = json.data;
+            debug_data["parsed_json"] = parseCharacter(json.data);
+        });
+}
+
 // Wait for auth token, then request character json
 waitForKeyElements(() => {
     return (globals.cobalt_token != undefined) && (globals.characterId != undefined);

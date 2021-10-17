@@ -464,13 +464,23 @@ button.bc-editor-cancel:hover {
 }
 
 .bc-icon-advantage,
-.bc-icon-inline[adjustment=Advantage] {
+.bc-icon-inline[adjustment=advantage] {
 	background-image: url("icons/advantage.svg");
+	font-size: 12px;
+	font-weight: normal;
+	font-stretch: condensed;
+	padding-left: 2.5ch;
+	color: lightgray;
 }
 
 .bc-icon-disadvantage,
-.bc-icon-inline[adjustment=Disadvantage] {
+.bc-icon-inline[adjustment=disadvantage] {
 	background-image: url("icons/disadvantage.svg");
+	font-size: 12px;
+	font-weight: normal;
+	font-stretch: condensed;
+	padding-left: 2.5ch;
+	color: lightgray;
 }
 
 .bc-icon-check {

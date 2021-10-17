@@ -1,5 +1,5 @@
 import { waitForKeyElements, register_url, register_fetch, merge, globals } from "./init.js";
-import { Character, gCharacters, gMonsters, roll_template_html } from "./campaign.js";
+import { Character, gCharacters, gMonsters, roll_template_html, pc_template } from "./campaign.js";
 import { BCRollLogger } from "./bcRollRenderer"
 import GridStack from '../node_modules/gridstack/dist/gridstack-h5';
 
@@ -399,13 +399,14 @@ function start_bc_combat() {
         }, () => {
             gCharacters.forEach(character => {
                 console.log("gCharacters entries:", character);
-                let c = $(`<li><div class="bc-character" character-id="${character.id}">${pc_template}</div></li>`)
+                let c = $(`<li><div class="bc-character" character-id="${character.id}">${pc_template_combat}</div></li>`)
                 c.appendTo("ul.bc-pc-list");
                 c.find(".bc-pc-initiative").data("roll", {
                     "publicRoll": false,
                     "rollType": "roll",
                     "action": "Initiative",
-                    "modifer": character.db_character.core.initiative,
+                    // "modifer": character.api_character.core.initiative,
+                    "modifer": 0,
                     "entityId": character.id,
                     "entityType": "character",
                     "contextName": character.name,
@@ -415,14 +416,9 @@ function start_bc_combat() {
                 c.find(".bc-pc-main-row").on("click", event => {
                     let combatant_div = $(".bc-section[bc-section=combat-selected] > .bc-combatant-detail");
                     combatant_div.empty().append(
-                        $(`<iframe
-                            id=${character.id}
-                            class="character_iframe"
-                            character-id="${character.id}"
-                            style='height: calc(100vh + 70px); width: 100%;'
-                            src="${character.url}">
-                           </iframe>`)
+                        $(`<div class="bc-character" character-id="${character.id}">${pc_template}</div>`)
                     );
+                    character.update_dom();
                 });
             });
         });
@@ -548,7 +544,7 @@ function load_grid_contents(layout) {
                 break;
             default:
                 let character_id = item.id.slice(10);
-                item.content = `<div class="bc-character" character-id="${character_id}">${pc_template}</div>`;
+                item.content = `<div class="bc-character" character-id="${character_id}">${pc_template_combat}</div>`;
                 break;
         }
     })
@@ -615,7 +611,7 @@ var combat_wrapper = `
 </div>
 `
 
-var pc_template = `
+var pc_template_combat = `
 <div class="bc-pc-main-wrapper">
     <div class="bc-pc-turn"></div>
     <div class="bc-pc-initiative-label">initiative</div>
