@@ -250,7 +250,6 @@ export class Character {
                 this.api_character = parseCharacter(json.data);
                 this.state = "complete";
                 this.update_dom();
-
             });
     }
 
@@ -498,7 +497,7 @@ function encounter_selected(event, encounter_id) {
  * 
 ******************************************************************************/
 function get_encounters() {
-    console.log("get_encounters");
+    console.log("get_encounters globals:", globals.cobalt_token.length);
     // TODO: campaign_info.id is occasionally undefined!
     fetch(
         "https://encounter-service.dndbeyond.com/v1/encounters?skip=0&take=100&campaignIds=" + game_id, {
@@ -809,7 +808,11 @@ function start_beyond_campaign() {
         load_details_section();
         load_map_section();
         load_encounters_section();
-        get_encounters();
+        waitForKeyElements(() => {
+            return globals.cobalt_token != undefined;
+        }, () => {
+            get_encounters();
+        });
 
     }
 }
