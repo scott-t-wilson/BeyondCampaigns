@@ -27,50 +27,50 @@
         "lib/easymde.min.css",
         "lib/gridstack.min.css"
       ]
+    },
+    {
+      "all_frames": true,
+      "matches": [
+        "https://www.dndbeyond.com/profile/*/characters/X"
+      ],
+      "run_at": "document_start",
+      "js": [
+        "lib/jquery.min.js",
+        "character.js"
+      ],
+      "css": []
+    },
+    {
+      "all_frames": true,
+      "matches": [
+        "https://www.dndbeyond.com/combat-tracker/X",
+        "https://www.dndbeyond.com/encounters/X"
+      ],
+      "run_at": "document_start",
+      "js": [
+        "lib/jquery.min.js",
+        "combat.js"
+      ],
+      "css": [
+        "main.css",
+        "combat.css",
+        "icons.css",
+        "roll.css",
+        "lib/gridstack.min.css"
+      ]
+    },
+    {
+      "all_frames": true,
+      "matches": [
+        "https://gamescape.app/X"
+      ],
+      "run_at": "document_start",
+      "js": [
+        "lib/jquery.min.js",
+        "gamescape.js"
+      ],
+      "css": []
     }
-    // {
-    //   "all_frames": true,
-    //   "matches": [
-    //     "https://www.dndbeyond.com/profile/*/characters/*"
-    //   ],
-    //   "run_at": "document_start",
-    //   "js": [
-    //     "lib/jquery.min.js",
-    //     "character.js"
-    //   ],
-    //   "css": []
-    // },
-    // {
-    //   "all_frames": true,
-    //   "matches": [
-    //     "https://www.dndbeyond.com/combat-tracker/*",
-    //     "https://www.dndbeyond.com/encounters/*"
-    //   ],
-    //   "run_at": "document_start",
-    //   "js": [
-    //     "lib/jquery.min.js",
-    //     "combat.js"
-    //   ],
-    //   "css": [
-    //     "main.css",
-    //     "combat.css",
-    //     "icons.css",
-    //     "roll.css",
-    //     "lib/gridstack.min.css"
-    //   ]
-    // },
-    // {
-    //   "all_frames": true,
-    //   "matches": [
-    //     "https://gamescape.app/*"
-    //   ],
-    //   "run_at": "document_start",
-    //   "js": [
-    //     "lib/jquery.min.js",
-    //     "gamescape.js"
-    //   ],
-    //   "css": []
-    // }
   ],
   "permissions": [
     "*://*.dndbeyond.com/*",
