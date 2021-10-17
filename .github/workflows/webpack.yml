@@ -40,11 +40,11 @@ jobs:
         echo "::set-output name=version::$version"
         echo "::set-output name=tag::$tag"
 
-    # - name: Upload a Build Artifact
-    #   uses: actions/upload-artifact@v2.2.4
-    #   with:
-    #     name: beyond_campaigns-${{steps.create_tag.outputs.version}}.xpi
-    #     path: web-ext-artifacts/beyond_campaigns-${{steps.create_tag.outputs.version}}.zip
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: beyond_campaigns-${{steps.create_tag.outputs.version}}.xpi
+        path: web-ext-artifacts/beyond_campaigns-${{steps.create_tag.outputs.version}}.zip
 
     - name: Create Draft Release
       id: create_release
