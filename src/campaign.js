@@ -30,7 +30,6 @@ export var gCharacters = [];
 register_url(
     "https://www.dndbeyond.com/campaigns/\\d*(#bc)?$",
     function load() {
-        console.log("register_url load:", document.URL);
         if (document.URL.match(/.*#bc$/)) {
             start_beyond_campaign();
         }
@@ -46,7 +45,6 @@ register_url(
         });
     },
     function unload() {
-        console.log("BC: unloading campaign");
     }
 );
 
@@ -56,7 +54,6 @@ register_url(
  * 
 ******************************************************************************/
 register_fetch("https://www.dndbeyond.com/api/campaign/stt/active-short-characters/\\d*$", function (json) {
-    console.log(json);
     json.data.forEach(character => {
         character.url = `https://www.dndbeyond.com/profile/${character.userName}/characters/${character.id}`;
         new Character(character);
@@ -134,7 +131,6 @@ class Encounter {
     }
 
     save() {
-        console.log("save:", this.id);
         db.encounters.set(this.id.toString(), { value: this });
     }
 
@@ -200,14 +196,6 @@ class Monster {
                 let api_monster = json.data[0];
                 merge(this, api_monster);
                 db.monsters.set(this.id.toString(), { value: this });
-
-                // this.roll_logger = new BCRollLogger({
-                //     entityId: this.id,   // 17165 (kenku) | 53497512 (Phil)
-                //     entityType: "monster",        // monster | character
-                //     contextName: this.name,         // Kenku | Phil
-                //     contextAvatarUrl: this.avatarUrl
-                // });
-
                 this.state = "complete";
             });
     }
@@ -223,14 +211,10 @@ function modToString(mod) {
 
 export class Character {
     constructor(character) {
-        console.log("character.constructor pre-merge()", character);
         merge(this, character);
-        console.log("character.constructor()", this);
         this.selector = `.bc-character[character-id=${this.id}]`;
         this.state = "loading";
         this.set_dom_basics();
-        console.log("campaign_info:", campaign_info);
-        console.log("game_id:", game_id);
         this.roll_logger = new BCRollLogger({
             entityId: this.id.toString(),   // 17165 (kenku) | 53497512 (Phil)
             entityType: "character",        // monster | character
@@ -243,7 +227,6 @@ export class Character {
     }
 
     fetch_api() {
-        console.log("starting fetch_api");
         fetch(
             `https://character-service.dndbeyond.com/character/v5/character/${this.id}`, {
             method: "GET",
@@ -255,7 +238,6 @@ export class Character {
         })
             .then(response => response.json())
             .then(json => {
-                console.log("character-service.dndbeyond.com");
                 this.api_character = parseCharacter(json.data);
                 this.state = "complete";
                 this.update_dom();
@@ -272,7 +254,6 @@ export class Character {
     }
 
     update_dom() {
-        console.log(`update_dom ${this.id}`);
         waitForKeyElements(this.selector, t => {
             if (this.state == "complete") {
                 t.find(".bc-pc-race").text(this.api_character.race);
@@ -315,22 +296,14 @@ export class Character {
     }
 
     stat_click(event) {
-        console.log("stat_click", this);
         let button = $(event.currentTarget);
         let stat = button.attr("stat");
         let skill_key = button.attr("skill");
-        console.log(event.currentTarget);
-        console.log('button.attr("stat")', button.attr("stat"));
-        console.log('button.attr("skill")', button.attr("skill"));
         let roll_wrapper = $(roll_template_html);
         let roll_menu = $(roll_wrapper).first();
         $("#bc-wrapper").append(roll_menu);
         $("#bc-main").css("pointer-events", "none");
-        // console.log(roll_wrapper);
-        // console.log(roll_menu);
         $(document.body).on("click keydown", event => {
-            // console.log("event.target:", event.target);
-            // console.log("(event.target == document.body):", (event.target == document.body));
             if ((event.target == document.body) || (event.originalEvent.key == "Escape")) {
                 roll_wrapper.remove();
                 $("#bc-main").css("pointer-events", "auto");
@@ -362,8 +335,6 @@ export class Character {
             $(roll_menu).find("li[bc-roll-type=save] > .bc-roll-popup-mod").text(
                 modToString(this.api_character.saves[stat].modifier)
             );
-            console.log($(roll_menu).find("li[bc-roll-type=save] > .bc-icon-inline"));
-            console.log("save adj:", this.api_character.saves[stat]);
             $(roll_menu).find("li[bc-roll-type=save] > .bc-icon-inline").attr(
                 "adjustment", this.api_character.saves[stat].adjustment
             ).text(this.api_character.saves[stat].restriction);
@@ -387,10 +358,6 @@ export class Character {
 
         let bounds = event.currentTarget.getBoundingClientRect();
         let menu_height = $(".bc-roll-popup").height();
-        console.log("document.body.clientHeight:", document.body.clientHeight);
-        console.log("menu_height:", menu_height);
-        console.log("roll_menu:", roll_menu);
-        console.log("bounds:", bounds);
         if ((bounds.top + menu_height) > document.body.clientHeight) {
             roll_menu.css("top", document.body.clientHeight - menu_height);
         } else {
@@ -414,7 +381,6 @@ export class Character {
     roll_click(event) {
         let button = $(event.currentTarget);
         let parent = button.parent();
-        console.log(parent);
         let rollAction = parent.find(".bc-pc-skill-label").text();
         let rollType = button.attr("rollType");
         let rollKind = "";
@@ -426,10 +392,6 @@ export class Character {
             rollKind = parent.find("li[bc-roll-kind] > .bc-icon-check:visible").parent().attr("bc-roll-kind") || "";
             rollModifer = roll_kind_li.find(".bc-roll-popup-mod").text();
         }
-        console.log('rollAction', rollAction);
-        console.log("rollType:", rollType);
-        console.log("rollKind:", rollKind);
-        console.log("rollModifer:", rollModifer);
         $(".bc-roll-popup-wrapper").remove();
         $("#bc-main").css("pointer-events", "auto");
         this.roll_logger.roll({
@@ -440,15 +402,6 @@ export class Character {
             modifer: rollModifer,  // +X | -Y
             log: true,
         })
-        console.log("#roll_logger:", this.roll_logger);
-        console.log(
-            this.roll_logger.data.action,
-            this.roll_logger.data.rolls[0].rollType,
-            this.roll_logger.data.rolls[0].rollKind,
-            this.roll_logger.data.rolls[0].diceNotationStr,
-            this.roll_logger.data.rolls[0].result.text,
-            this.roll_logger.data.rolls[0].result.total
-        )
     }
 
 }
@@ -506,7 +459,6 @@ function encounter_selected(event, encounter_id) {
  * 
 ******************************************************************************/
 function get_encounters() {
-    console.log("get_encounters globals:", globals.cobalt_token.length);
     // TODO: campaign_info.id is occasionally undefined!
     fetch(
         "https://encounter-service.dndbeyond.com/v1/encounters?skip=0&take=100&campaignIds=" + game_id, {
@@ -518,11 +470,9 @@ function get_encounters() {
         }
     })
         .then(response => {
-            console.log("get_encounters response:", response);
             return response.json();
         })
         .then(json => {
-            console.log("get_encounters json:", json);
             json.data.sort((first_el, second_el) => {
                 let first = (!first_el.name || first_el.name.length === 0) ? "Untitled" : first_el.name;
                 let second = (!second_el.name || second_el.name.length === 0) ? "Untitled" : second_el.name;
@@ -603,7 +553,6 @@ function load_encounters_section() {
 ******************************************************************************/
 function load_details_section() {
     let section = $(".bc-section[bc-section=details]");
-    console.log("load_details:", section);
     section.find(".bc-icon-edit").on("click", event => {
         let uuid = $(event.currentTarget).data("uuid");
         let url = `https://www.dndbeyond.com/encounters/${uuid}/edit`
@@ -687,10 +636,7 @@ function load_markdown() {
  * 
 ******************************************************************************/
 function load_map_section() {
-    console.log("load_map:", $("#bc-map"));
     $(".bc-map-wrapper .bc-icon-home").on("click", event => {
-        console.log(event);
-        console.log($("#bc-map"));
         $("#bc-map").attr("src", map_url);
     });
 }
@@ -701,7 +647,6 @@ function load_map_section() {
  * 
 ******************************************************************************/
 function start_beyond_campaign() {
-    console.log("start_beyond_campaign:");
     $("body > div")
         .filter(":not(.bc-default-divs)")
         .filter(":not([style$='display: none;'])")
@@ -725,7 +670,6 @@ function start_beyond_campaign() {
         let layout_json = localStorage.getItem(`bc_layout_campaign_${game_id}`);
         if (layout_json) {
             starting_grid = JSON.parse(layout_json);
-            console.log(starting_grid);
         } else {
             starting_grid = [
                 { "x": 8, "y": 0, "w": 7, "h": 10, "id": "encounter_list" },
@@ -738,23 +682,14 @@ function start_beyond_campaign() {
             ];
         }
         load_grid_contents(starting_grid);
-        console.log("starting_grid:", starting_grid);
         grid.load(starting_grid);
 
-        // console.log("gCharacters 1:", gCharacters);
-        // console.log("gCharacters.length:", gCharacters.length);
-        // for (let i = 0; i < gCharacters.length; i++) {
-        //     console.log("gCharacters entries:", gCharacters[i]);
-        // }
-        // console.log("gCharacters 2:", gCharacters);
         waitForKeyElements(() => {
             return gCharacters.length > 0;
         }, () => {
             gCharacters.forEach(character => {
-                console.log("gCharacters entries:", character);
                 let grid_id = "character_" + character.id;
                 if ($(`.grid-stack-item[gs-id=${grid_id}]`).length == 0) {
-                    console.log("adding widget for:", grid_id);
                     grid.addWidget({
                         "x": 0, "y": 0, "w": 8, "h": 5,
                         "id": grid_id,
@@ -764,35 +699,13 @@ function start_beyond_campaign() {
                 // character.fetch_iframe(); // this should be safe to call twice, wfke will mark the elements and only run once
             });
         });
-        // gCharacters.forEach(character => {
-        //     console.log("gCharacters entries:", character);
-        //     let grid_id = "character_" + character.id;
-        //     let missing = true;
-        //     starting_grid.forEach(item => {
-        //         if (item.id == grid_id) {
-        //             missing = false;
-        //         }
-        //     })
-        //     if (missing) {
-        //         starting_grid.push({
-        //             "x": 0, "y": 0, "w": 8, "h": 5,
-        //             "id": grid_id,
-        //             "content": `<div class="bc-character" character-id="${character.id}">${pc_template}</div>`,
-        //         })
-        //     }
-        //     character.fetch_iframe(); // this should be safe to call twice, wfke will mark the elements and only run once
-        // })
 
         grid.on("change", () => {
             let layout = grid.save(false);
-            localStorage.setItem(`bc_layout_${game_id}`, JSON.stringify(layout));
-            // console.log("grid change", layout);
+            localStorage.setItem(`bc_layout_campaign_${game_id}`, JSON.stringify(layout));
         });
 
-        console.log($(".grid-stack-item-content"));
-        // $(".bc-icon-edit,.bc-icon-play-circle").hide();
         $(".bc-heading").on("dblclick", event => {
-            console.log($(event.currentTarget).parents("[gs-h]"));
             let item = $(event.currentTarget).parents("[gs-h]");
             let current_height = item.attr("gs-h");
             let saved_height = item.attr("bc-gs-h");

@@ -172,16 +172,6 @@ input.bc-heading-search {
 	opacity: 100 !important;
 }
 
-
-.grid-stack-item {
-	/* outline: 1px solid; */
-	/* box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 3px; */
-	/* border-radius: 3px;
-	padding: 10px;
-    box-shadow: 2px 2px 3px 2px rgba(0, 0, 0, .2);
-    opacity: .8 */
-}
-
 .grid-stack-item-content {
 	border-radius: 3px;
 	/* padding: 10px; */
@@ -289,20 +279,6 @@ iframe.bc-map-wrapper {
 	z-index: 200;
 }
 
-/* .bc-editor-field {
-	position: fixed;
-	bottom: 0;
-}  */
-
-
-/* class="CodeMirror cm-s-easymde CodeMirror-fullscreen CodeMirror-sided" */
-
-.bc-encounter-summary {}
-
-.bc-encounter-description {}
-
-.bc-encounter-rewards {}
-
 .bc-icon-refresh {
 	border: 0 solid black;
 	border: 3px solid transparent;
@@ -362,11 +338,6 @@ iframe.bc-map-wrapper {
 	margin-left: .5ch;
 }
 
-
-div.bc-encounter-list {
-	/* padding-left: 3px; */
-}
-
 .editor-preview ul,
 .bc-section-markdown ul {
 	list-style: revert;
@@ -379,10 +350,6 @@ div.bc-encounter-list {
 	list-style: decimal;
 	margin: revert;
 	padding-left: 20px;
-}
-
-ol.bc-encounter-list {
-	/* margin-left: 5px; */
 }
 
 li.bc-encounter-list {
@@ -401,10 +368,6 @@ li.bc-encounter-list:hover {
 
 li.bc-encounter-selected {
 	background-color: #c4c4c4;
-}
-
-li:focus {
-	/* outline: solid 1px green; */
 }
 
 button.bc-editor-save {
@@ -743,12 +706,6 @@ div.bc-roll-popup-mod {
 .bc-gamelog-detail-text,
 .bc-gamelog-detail-total{
 	display: inline-block;
-}
-
-.bc-gamelog-roll-action{}
-
-.bc-gamelog-roll-kind,
-.bc-gamelog-result-text {
 }
 
 .bc-tooltip{
