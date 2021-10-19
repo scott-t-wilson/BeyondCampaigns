@@ -418,6 +418,18 @@ export function waitForKeyElements(selectorOrFunction, callback, options) {
     }
 }
 
+export function downloadJsonFile(data, filename) {
+    // Creating a blob object from non-blob data using the Blob constructor
+    const blob = new Blob([JSON.stringify(data, undefined, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    // Create a new anchor element
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename || 'download';
+    a.click();
+    a.remove();
+}
+
 function update_character_vitals(character_id) {
     console.log("update_character_vitals");
     fetch(

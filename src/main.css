@@ -24,6 +24,7 @@ table {
 }
 
 .bc-breadcrumb {
+	display: inline-block;
 	color: black;
 	padding: 5px;
 	margin: 5px;
@@ -459,11 +460,11 @@ button.bc-editor-cancel:hover {
 	background: none !important;
 }
 
-.bc-icon-flat {
+/* .bc-icon-flat {
 	background-image: url("icons/flat.svg");
-}
+} */
 
-.bc-icon-advantage,
+/* .bc-icon-advantage,
 .bc-icon-inline[adjustment=advantage] {
 	background-image: url("icons/advantage.svg");
 	font-size: 12px;
@@ -471,9 +472,9 @@ button.bc-editor-cancel:hover {
 	font-stretch: condensed;
 	padding-left: 2.5ch;
 	color: lightgray;
-}
+} */
 
-.bc-icon-disadvantage,
+/* .bc-icon-disadvantage,
 .bc-icon-inline[adjustment=disadvantage] {
 	background-image: url("icons/disadvantage.svg");
 	font-size: 12px;
@@ -481,9 +482,9 @@ button.bc-editor-cancel:hover {
 	font-stretch: condensed;
 	padding-left: 2.5ch;
 	color: lightgray;
-}
+} */
 
-.bc-icon-check {
+/* .bc-icon-check {
 	background-image: url("icons/check.svg");
 	float: right;
 	height: 25px;
@@ -492,27 +493,23 @@ button.bc-editor-cancel:hover {
 	min-width: max-content;
 	margin: 2px .5ch 0 0;
 	border-radius: 5px;
-	/* position: relative; */
 	background-repeat: no-repeat;
 	padding-left: 2ch;
 	font-size: 20px;
-}
+} */
 
-.bc-icon-left-gutter {
-	/* border: 0 solid black; */
-	/* border: 3px solid transparent; */
+/* .bc-icon-left-gutter {
 	border-radius: 5px;
 	display: inline;
 	position: relative;
 	background-repeat: no-repeat;
 	background-position-y: .5px;
 	padding-left: 2ch;
-	/* margin-left: .5ch; */
 	margin-right: 10px;
 	font-size: 20px;
-}
+} */
 
-.bc-icon-inline {
+/* .bc-icon-inline {
 	margin: 2px .5ch 0 0;
 	border-radius: 5px;
 	position: relative;
@@ -521,10 +518,8 @@ button.bc-editor-cancel:hover {
 	font-size: 15px;
 	line-height: 10px;
 	margin-left: .5ch;
-}
+} */
 
-
-.bc-icon-disadvantage {}
 
 /* .bc-icon-advantage:hover,
 .bc-icon-flat:hover,

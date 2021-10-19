@@ -1,4 +1,4 @@
-import { waitForKeyElements, register_url, register_fetch, gamelog, globals, merge } from "./init.js";
+import { waitForKeyElements, register_url, register_fetch, gamelog, globals, merge, downloadJsonFile } from "./init.js";
 import { parseCharacter } from "./parseCharacter.js";
 import { BCRollLogger } from "./bcRollRenderer"
 import { Sifrr } from '@sifrr/storage';
@@ -18,7 +18,7 @@ var game_id = null;
 var campaign_info = {}
 var grid = null;
 var campaign_wrapper = null;
-var gEncounters = [];
+var gEncounters = {};
 export var gMonsters = [];
 export var gCharacters = [];
 
@@ -136,6 +136,15 @@ class Encounter {
     save() {
         console.log("save:", this.id);
         db.encounters.set(this.id.toString(), { value: this });
+    }
+
+    mdBlob() {
+        return {
+            id: this.id,
+            mdFlavorText: this.mdFlavorText,
+            mdDescription: this.mdDescription,
+            mdRewards: this.mdRewards
+        }
     }
 }
 
@@ -812,6 +821,13 @@ function start_beyond_campaign() {
             return globals.cobalt_token != undefined;
         }, () => {
             get_encounters();
+            $("#bc-backup").on("click", () => {
+                let encountersBackup = {};
+                Object.keys(gEncounters).forEach(k => {
+                    encountersBackup[k] = gEncounters[k].mdBlob();
+                });
+                downloadJsonFile(encountersBackup, "campaign_backup.json");
+            });
         });
 
     }
@@ -983,6 +999,7 @@ var campaign_wrapper = `
                         </li>
                     </ul>
                 </nav>
+                <div id="bc-backup" class="bc-icon-down-circle bc-icon-header"></div>
             </section>
         </div>
         <div class="grid-stack">

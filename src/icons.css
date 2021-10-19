@@ -44,7 +44,6 @@
 	border-color: #57aec9;
 }
 
-
 .bc-icon-flat {
 	background-image: url("icons/flat.svg");
 }
@@ -99,5 +98,14 @@
 	margin-left: .5ch;
 }
 
-
-.bc-icon-disadvantage {}
+.bc-icon-header {
+	margin: 2px .5ch 0 0;
+	border-radius: 5px;
+	position: relative;
+	background-repeat: no-repeat;
+	padding-left: 2ch;
+	font-size: 15px;
+	line-height: 20px;
+	margin-left: .5ch;
+	top: -14px;
+}

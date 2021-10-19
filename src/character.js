@@ -1,4 +1,4 @@
-import { waitForKeyElements, globals, register_fetch, deep_compare } from "./init.js";
+import { waitForKeyElements, globals, downloadJsonFile, register_fetch, deep_compare } from "./init.js";
 import { Sifrr } from '@sifrr/storage';
 import { parseCharacter, compareCharacterJSON } from "./parseCharacter.js";
 // const parseCharacter = require('../src/parseCharacter.js');
@@ -12,18 +12,6 @@ let characterId_arr = document.URL.match(/https:\/\/www.dndbeyond.com\/profile\/
 if (characterId_arr && characterId_arr.length == 2) {
     globals.characterId = characterId_arr[1];
 };
-
-function downloadJsonFile(data, filename) {
-    // Creating a blob object from non-blob data using the Blob constructor
-    const blob = new Blob([JSON.stringify(data, undefined, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    // Create a new anchor element
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename || 'download';
-    a.click();
-    a.remove();
-}
 
 function fetchCharacter(characterId){
     fetch(
