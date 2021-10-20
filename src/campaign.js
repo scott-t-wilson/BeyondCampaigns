@@ -429,9 +429,9 @@ function encounter_selected(event, encounter_id) {
     }
     $(".bc-icon-edit,.bc-icon-play-circle").show();
     $(".bc-icon-edit,.bc-icon-play-circle").data("uuid", encounter_id);
-    $(".bc-encounter-summary").html(marked(encounter.mdFlavorText));
-    $(".bc-encounter-description").html(marked(encounter.mdDescription));
-    $(".bc-encounter-rewards").html(marked(encounter.mdRewards));
+    $(".bc-encounter-summary").html(marked(encounter.mdFlavorText)).find("a").attr("target", "_blank");
+    $(".bc-encounter-description").html(marked(encounter.mdDescription)).find("a").attr("target", "_blank");
+    $(".bc-encounter-rewards").html(marked(encounter.mdRewards)).find("a").attr("target", "_blank");
     $(".bc-encounter-details").empty();
     if (Monster.isReady()) {
         let monster_count = {};
@@ -615,7 +615,7 @@ function load_markdown() {
         $(`<button class="bc-editor-save" tabindex="-1">Save</button>`).on("click", event => {
             $(".editor-statusbar").appendTo(footer.parent()); // move the status bar back or mde breaks
             encounter[mdProperty] = mde.value();
-            $(targetSelector).html(marked(encounter[mdProperty]));
+            $(targetSelector).html(marked(encounter[mdProperty])).find("a").attr("target", "_blank");
             encounter.save();
             mde.toTextArea();
             mde = null;
