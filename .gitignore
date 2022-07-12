@@ -118,3 +118,4 @@ dist
 notes/*
 tests/*.json
 tests/data
+.cspell/custom-dictionary-workspace.txt
