@@ -295,7 +295,7 @@ export class BCRollLogger {
         //     action: "",  // Mace | con | Stealth | Initiative
         //     rollType: "",  // damage | to hit | save | check | roll
         //     rollKind: "",  // disadvantage | advantage | critical hit
-        //     modifer: "",  // +X | -Y
+        //     modifier: "",  // +X | -Y
         //     log: true|false  send to gameLog
         // }
         if (options.d20 == undefined) {
@@ -349,7 +349,7 @@ export class BCRollLogger {
                 api_roll.diceNotation.set[0].operand = 1;
             }
             // Format the bonus so we don't have a '+-1'
-            let bonus = parseInt(options.modifer);
+            let bonus = parseInt(options.modifier);
             if (bonus > 0) {
                 api_roll.diceNotationStr += "+" + bonus;
             }
@@ -433,7 +433,7 @@ export class BCRollLogger {
 //     action: "con",  // Mace | con | Stealth
 //     rollType: "check",  // damage | to hit | save | check
 //     rollKind: "disadvantage",  // disadvantage | advantage
-//     modifer: "-1",  // +X | -Y
+//     modifier: "-1",  // +X | -Y
 //     log: true,
 // })
 

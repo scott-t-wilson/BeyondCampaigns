@@ -127,12 +127,15 @@ img.bc-combatant-avatar:hover {
     outline: 1px solid rgb(168, 168, 168);
 }
 
-.bc-pc-main-wrapper[current-turn] > .bc-pc-initiative,
-.bc-combatant-main-wrapper[current-turn] > .bc-combatant-initiative,
 .bc-pc-main-wrapper[current-turn] > .bc-pc-initiative-label,
 .bc-combatant-main-wrapper[current-turn] > .bc-combatant-initiative-label {
-    color: white;
+}
+
+.bc-pc-main-wrapper[current-turn] > .bc-pc-initiative,
+.bc-combatant-main-wrapper[current-turn] > .bc-combatant-initiative {
     outline: none;
+    border: none;
+    background-color: #007cff;
 }
 
 .bc-pc-main-wrapper[current-turn] > .bc-pc-turn,
@@ -141,7 +144,7 @@ img.bc-combatant-avatar:hover {
     display: inline;
 	grid-column: 1;
 	grid-row: 1 / span 3;
-	background: #007cff;
+	background: #007cff;    
 	color: white;
 	border-radius: 3px;
 	margin-right: 2px;

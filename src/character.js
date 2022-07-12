@@ -59,7 +59,7 @@ var db = Sifrr.Storage.getStorage({
     priority: ['indexeddb', 'websql', 'localstorage', 'cookies', 'jsonstorage'],
     name: "characters",
     version: 1, // version number (integer / float / string), 1 is treated same as '1'
-    desciption: 'Beyond Campaigns webextension storage',
+    description: 'Beyond Campaigns webextension storage',
     size: 5 * 1024 * 1024, // Max db size in bytes only for websql (integer)
     ttl: 0 // Time to live/expire for data in table (in ms), 0 = forever
 });
@@ -104,8 +104,8 @@ function parse_dom() {
         url: document.URL,
         last_update: Date.now().toString()
     };
-    console.log("chracter.js: no avatar elements:", $(".ddbc-character-avatar__portrait"));
-    console.log("chracter.js: background-image:", $(".ddbc-character-avatar__portrait").css("background-image"));
+    console.log("character.js: no avatar elements:", $(".ddbc-character-avatar__portrait"));
+    console.log("character.js: background-image:", $(".ddbc-character-avatar__portrait").css("background-image"));
 
     let avatar_jq = $(".ddbc-character-avatar__portrait");
     let avatar_url = avatar_jq.css("background-image");
@@ -117,7 +117,7 @@ function parse_dom() {
             character.avatarUrl = "https://www.dndbeyond.com/Content/Skins/Waterdeep/images/characters/default-avatar-builder.png";
         }
     } else {
-        console.log("chracter.js: no avatar elements:", avatar_jq);
+        console.log("character.js: no avatar elements:", avatar_jq);
     }
     console.log(character.avatarUrl);
 

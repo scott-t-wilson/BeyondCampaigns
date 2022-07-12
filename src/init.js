@@ -453,20 +453,6 @@ function update_character_vitals(character_id) {
 }
 
 
-/******************************************************************************
- * 
- * REGISTER GAMELOG CHARACTER UPDATES
- * 
-******************************************************************************/
-gamelog.listen(function (json) {
-    if (json.gameId == globals.gameId &&
-        json.entityType == "character" &&
-        json.eventType == "character-sheet/character-update/fulfilled"
-    ) {
-        console.log("character update, id:", json.entityId);
-        update_character_vitals(json.entityId);
-    }
-});
 
 /******************************************************************************
  * 

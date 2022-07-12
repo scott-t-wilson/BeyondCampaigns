@@ -1090,7 +1090,7 @@ const rules = {
 // {
 //     finalArmorClass: 5,
 //     baseArmorClass: 10,  // Equal to the type of armor worn, or 10
-//     dexModifer: 0,  // Characters dex mod, unless its negated by some other rule
+//     dexmodifier: 0,  // Characters dex mod, unless its negated by some other rule
 //     unarmoredModifier: 0,  // This will include natural armor or class mod, whichever is higher
 //     shieldModifier: 0, // 2 or 0, I think
 //     armorType: 0, // 1-3: light, medium, heavy- defined in rules.armorTypes
@@ -1102,7 +1102,7 @@ function getArmor(c_json, c, modifiers) {
     let armor = {
         finalArmorClass: null,
         baseArmorClass: 10,  // Equal to the type of armor worn, or 10
-        dexModifer: c.stats["dex"].modifier,  // Characters dex mod, unless its negated by some other rule
+        dexmodifier: c.stats["dex"].modifier,  // Characters dex mod, unless its negated by some other rule
         unarmoredModifier: 0,  // This will include natural armor or class mod, whichever is higher
         shieldModifier: 0, // 2 or 0, I think
         armorType: 0, // 1-3: light, medium, heavy- defined in rules.armorTypes
@@ -1117,15 +1117,15 @@ function getArmor(c_json, c, modifiers) {
 
     // Cap dex bonus- this goes along with natural armor
     filterModifiers(modifiers, undefined, "set", "ac-max-dex-modifier").forEach(mod => {
-        if (mod.value < armor.dexModifer) {
-            armor.dexModifer = mod.value;
+        if (mod.value < armor.dexmodifier) {
+            armor.dexmodifier = mod.value;
         }
     });
 
     // Remove dex bonus- this goes along with natural armor
     filterModifiers(modifiers, undefined, "ignore", "unarmored-dex-ac-bonus").forEach(mod => {
-        if (mod.value < armor.dexModifer) {
-            armor.dexModifer = 0;
+        if (mod.value < armor.dexmodifier) {
+            armor.dexmodifier = 0;
         }
     });
 
@@ -1159,7 +1159,7 @@ function getArmor(c_json, c, modifiers) {
                 } else {
                     if (item.definition.armorTypeId == 3) {
                         // heavy armor doesn't use a dex bonus
-                        armor.dexModifer = 0
+                        armor.dexmodifier = 0
                     }
                     if (item.definition.stealthCheck == 2) {
                         armor.stealthAdjustment = "Disadvantage";
@@ -1172,10 +1172,10 @@ function getArmor(c_json, c, modifiers) {
         }
     });
     // console.log("armor.baseArmorClass:", armor.baseArmorClass);
-    // console.log("armor.dexModifer:", armor.dexModifer);
+    // console.log("armor.dexmodifier:", armor.dexmodifier);
     // console.log("armor.unarmoredModifier:", armor.unarmoredModifier);
     // console.log("armor.shieldModifier:", armor.shieldModifier);
-    armor.finalArmorClass = armor.baseArmorClass + armor.dexModifer + armor.unarmoredModifier + armor.shieldModifier;
+    armor.finalArmorClass = armor.baseArmorClass + armor.dexmodifier + armor.unarmoredModifier + armor.shieldModifier;
     return armor;
 }
 
@@ -1200,7 +1200,7 @@ function getModifiers(c_json) {
         let mod_array = c_json.modifiers[mod_source];
         mod_array.forEach((mod, source) => {
             if ((mod_source != "item") || isItemActive(c_json, mod.componentId)) {
-                console.log("mod:", mod_source, mod.type, mod.subType, mod.value);
+                // console.log("mod:", mod_source, mod.type, mod.subType, mod.value);
                 modifiers.push({
                     source: mod_source,
                     type: mod.type,
@@ -1222,11 +1222,14 @@ function getSpells(c_json) {
         let spell_array = c_json.spells[spell_source];
         if (spell_array) {
             spell_array.forEach((spell_json, source) => {
-                let spell = {
-                    source: spell_source,
-                    name: spell_json.definition.name,
+                console.log(spell_json);
+                if (spell_json.definition) {
+                    let spell = {
+                        source: spell_source,
+                        name: spell_json.definition.name,
+                    }
+                    spells.push(spell);
                 }
-                spells.push(spell);
             });
         }
     });
@@ -1278,13 +1281,15 @@ function characterLevel(c_json) {
     return c_level;
 }
 
-function statModifer(stat_value) {
-    let stat_modifer = rules.statModifiers.find(r_statMod => {
+function statmodifier(stat_value) {
+    console.log("statmodifier(stat_value):", stat_value)
+    console.log("statmodifier(rules.statModifiers):", rules.statModifiers)
+    let stat_modifier = rules.statModifiers.find(r_statMod => {
         if (stat_value == r_statMod.value) {
             return true;
         }
     });
-    return stat_modifer.modifier;
+    return stat_modifier.modifier;
 }
 
 function levelProficiencyBonuses(characterLevel, proficiencyLevel) {
@@ -1528,7 +1533,7 @@ function parseCharacter(c_json) {
             key: stat_key,
             name: stat_name,
             value: stat_value,
-            modifier: statModifer(stat_value)
+            modifier: statmodifier(stat_value)
         };
     });
 
@@ -1683,7 +1688,7 @@ function compareCharacterJSON(c_dom, c_api) {
             //     util.inspect(c_dom[property_name], { breakLength: 120, colors: true }));
             // console.log(`c_api[${property_name}]: `,
             //     util.inspect(c_api[property_name], { breakLength: 120, colors: true }));
-            console.log(`${property_name}:`, diff);
+            // console.log(`${property_name}:`, diff);
         }
     });
     return equal_flag;

